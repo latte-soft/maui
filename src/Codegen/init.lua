@@ -131,7 +131,15 @@ local function BuildFromSelection(selection, options, log)
                     -- We're using `FunctionsReturnRaw` on LuaEncode later, this will set the return
                     -- to the rew value, which is the script closure
                     ObjectTree.Closure = function()
-                        return "function() " .. ScriptSource .. " end"
+                        local EndStatement = " end" do
+                            local SplitSource = string.split(ScriptSource, "\n")
+                            local LastLine = SplitSource[#SplitSource]
+                            if LastLine and string.find(LastLine, "--") then
+                                EndStatement = "\nend"
+                            end
+                        end
+
+                        return "function() " .. ScriptSource .. EndStatement
                     end
                 end
             end

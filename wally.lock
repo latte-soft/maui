@@ -4,7 +4,7 @@ registry = "test"
 
 [[package]]
 name = "latte-soft/maui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [["LuaEncode", "regginator/luaencode@1.1.4"]]
 
 [[package]]
