@@ -14,6 +14,8 @@ There have been fairly [i]similar[/i] solutions to these issues in the past like
 
 While the previous way of doing things is not necessarily [i]bad[/i], and can actually be quite useful for small/simple projects, it's not always efficent for proper code organization or development in general. These days, we also have MANY awesome, professional tools created by Roblox's OSS community like [url=https://rojo.space]Rojo[/url] and [url=https://wally.run]Wally[/url] [size=xx-small]sorry, wally[/size], and even libraries such as [url=https://github.com/Roblox/roact]React[/url], [url=https://github.com/Elttob/Fusion]Fusion[/url], and [url=https://github.com/evaera/roblox-lua-promise]Promise[/url].
 
+[b]Do note, Maui is very-much in its' early stages! You may find small bugs, and we do not yet have all of the features implemented that we want to. It's better to just get it out, and update from there![/b]
+
 [size=small][i]Please read [b]this[/b], though[/i][/size]
 [size=x-large][b]Also..[/b][/size]
 [b]The first thing you may be wondering if you clicked on the [i]"Get it on Roblox"[/i] button before reading this[/b] is probably something along the lines of [b]"Why is this a paid plugin?"[/b]. Well, it [i]is[/i] and it [i]isn't[/i]. Let me explain.
