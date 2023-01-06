@@ -134,7 +134,9 @@ local function BuildFromSelection(selection, options, log)
                         local EndStatement = " end" do
                             local SplitSource = string.split(ScriptSource, "\n")
                             local LastLine = SplitSource[#SplitSource]
-                            if LastLine and string.find(LastLine, "--") then
+                            -- If the last line has a comment NOT followed by at least a "[" character, it means
+                            -- that it's a full-line comment, and we need to call `end` on the next line
+                            if LastLine and string.match(LastLine, "%-%-[^%[]") then
                                 EndStatement = "\nend"
                             end
                         end
