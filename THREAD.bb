@@ -74,8 +74,6 @@ After the script is built, Maui should open the output script's editor window, a
 
 [img=600x256]https://media.discordapp.net/attachments/1060751075415687178/1060818298213777418/image.png?width=1069&height=456[/img]
 
-[img=450x258]https://media.discordapp.net/attachments/1060751075415687178/1060819391882731520/image.png[/img]
-
 From there, you're done! You can run it in a script utility, another script, place it into obfuscation, etc.. It's 100% portable, and will work in almost [i]any[/i] Roblox environment!
 
 [size=small][i]This is a simple test-script for using Fusion with an exploit, you can see the source [url=https://github.com/latte-soft/maui/blob/main/tests/HelloFusion]here[/url]![/i][/size]
