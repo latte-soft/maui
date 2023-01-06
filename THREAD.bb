@@ -76,6 +76,8 @@ After the script is built, Maui should open the output script's editor window, a
 
 From there, you're done! You can run it in a script utility, another script, place it into obfuscation, etc.. It's 100% portable, and will work in almost [i]any[/i] Roblox environment!
 
+Remember, because it [b]literally[/b] packs a Roblox model, you need to have at least 1 [font=Courier]LocalScript[/font] (client context) or [font=Courier]Script[/font] (server context) to actually initialize what you want. You can't [i]really[/i] interract with Maui's script environment outside of the codegen, you need to do everything internally in the packed script. (for added security you can't, we may add something like this later on)
+
 [size=small][i]This is a simple test-script for using Fusion with an exploit, you can see the source [url=https://github.com/latte-soft/maui/blob/main/tests/HelloFusion]here[/url]![/i][/size]
 [img=775x372]https://media.discordapp.net/attachments/1060751075415687178/1060976562654154772/image.png?width=950&height=456[/img]
 
