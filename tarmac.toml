@@ -1,0 +1,9 @@
+name = "Maui"
+upload-to-group-id = 10685936 # Latte Softworks; https://www.roblox.com/groups/10685936/Latte-Softworks#!/about
+
+# Our assets
+[[inputs]]
+glob = "assets/**/*.png"
+codegen = true
+codegen-path = "src/Tarmac/Assets.lua"
+codegen-base-path = "assets" # Set the assets dir as root

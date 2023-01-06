@@ -1,0 +1,10 @@
+{
+    "name": "MauiFusionDemo",
+    "tree": {
+        "$path": "HelloFusion.client.lua",
+
+        "Fusion": {
+            "$path": "../../submodules/_Index/Fusion"
+        }
+    }
+}

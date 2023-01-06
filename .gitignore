@@ -1,0 +1,17 @@
+# Rojo-built files
+/build
+/*.rbxm
+/*.rbxmx
+/*.rbxl
+/*.rbxlx
+
+# DarkLua minified src output
+/dist
+
+# Wally-installed packages (Use `wally.lock` for specific pkg version reinstallation)
+/Packages
+/ServerPackages
+/DevPackages
+
+# Unneeded for src ctrl
+/sourcemap.json

@@ -1,0 +1,196 @@
+do
+    local Version = "${Version}"
+
+    local RunService = game:GetService("RunService")
+    local IsServer = RunService:IsServer()
+    local IsClient = RunService:IsClient()
+
+    local RealEnvironment = getfenv(0)
+
+    local ReferenceBindings = {}
+    local ReferencesToSet = {}
+
+    local ScriptClosures = {}
+    local StoredModuleValues = {}
+    local ScriptsToRun = {}
+
+    local SharedEnvironment = {}
+
+    local function CreateInstanceFromObject(objectTree)
+        local CreatedOk, CreatedInstance = pcall(Instance.new, objectTree.ClassName)
+        if not CreatedOk then
+            return
+        end
+
+        ReferenceBindings[objectTree.Reference] = CreatedInstance
+
+        if objectTree["Closure"] then
+            ScriptClosures[CreatedInstance] = objectTree.Closure
+
+            if CreatedInstance:IsA("BaseScript") then
+                table.insert(ScriptsToRun, CreatedInstance)
+            end
+        end
+
+        if objectTree["Properties"] then
+            for Property, Value in next, objectTree.Properties do
+                pcall(function()
+                    CreatedInstance[Property] = Value
+                end)
+            end
+        end
+
+        if objectTree["RefProperties"] then
+            for Property, ReferenceId in next, objectTree.RefProperties do
+                table.insert(ReferencesToSet, {
+                    InstanceObject = CreatedInstance,
+                    Property = Property,
+                    ReferenceId = ReferenceId
+                })
+            end
+        end
+
+        if objectTree["Attributes"] then
+            for Attribute, Value in next, objectTree.Attributes do
+                pcall(CreatedInstance.SetAttribute, CreatedInstance, Attribute, Value)
+            end
+        end
+
+        if objectTree["Children"] then
+            for _, ChildObjectTree in next, objectTree.Children do
+                local CreatedChildInstance = CreateInstanceFromObject(ChildObjectTree)
+                if CreatedChildInstance then
+                    CreatedChildInstance.Parent = CreatedInstance
+                end
+            end
+        end
+
+        return CreatedInstance
+    end
+
+    local RealObjectRoot = {} do
+        for _, ObjectTree in next, ModuleRoot do
+            table.insert(RealObjectRoot, CreateInstanceFromObject(ObjectTree))
+        end
+    end
+
+    local function LoadScript(scriptObject)
+        local StoredModuleValue = StoredModuleValues[scriptObject]
+        if scriptObject.ClassName == "ModuleScript" and StoredModuleValue then
+            return unpack(StoredModuleValue)
+        end
+
+        local Closure = ScriptClosures[scriptObject]
+        if not Closure then
+            return
+        end
+
+        do
+            local VirtualEnvironment
+
+            local GlobalEnvironmentOverride = {
+                ["maui"] = table.freeze({
+                    Version = Version,
+                    GetScript = function()
+                        return script
+                    end,
+                    GetShared = function()
+                        return SharedEnvironment
+                    end
+                }),
+                ["script"] = scriptObject,
+                ["require"] = function(ModuleToRequire, ...)
+                    if ModuleToRequire and ModuleToRequire.ClassName == "ModuleScript" and ScriptClosures[ModuleToRequire] then
+                        return LoadScript(ModuleToRequire)
+                    end
+
+                    return require(ModuleToRequire, ...)
+                end,
+                ["getfenv"] = function(StackLevel, ...)
+                    if type(StackLevel) == "number" and StackLevel >= 0 then
+                        if StackLevel == 0 then
+                            return VirtualEnvironment
+                        else
+                            local GetOk, FunctionEnvironment = pcall(getfenv, StackLevel)
+                            if GetOk and FunctionEnvironment == RealEnvironment then
+                                return VirtualEnvironment
+                            end
+                        end
+                    end
+
+                    return getfenv(StackLevel, ...)
+                end,
+                ["setfenv"] = function(StackLevel, NewEnvironment, ...)
+                    if type(StackLevel) == "number" and StackLevel >= 0 then
+                        if StackLevel == 0 then
+                            return setfenv(VirtualEnvironment, NewEnvironment)
+                        else
+                            local GetOk, FunctionEnvironment = pcall(getfenv, StackLevel)
+                            if GetOk and FunctionEnvironment == RealEnvironment then
+                                return setfenv(VirtualEnvironment, NewEnvironment)
+                            end
+                        end
+                    end
+
+                    return setfenv(StackLevel, NewEnvironment, ...)
+                end
+            }
+
+            VirtualEnvironment = setmetatable({}, {
+                __index = function(_, index)
+                    local IndexInVirtualEnvironment = rawget(VirtualEnvironment, index)
+                    if IndexInVirtualEnvironment ~= nil then
+                        return IndexInVirtualEnvironment
+                    end
+
+                    local IndexInGlobalEnvironmentOverride = GlobalEnvironmentOverride[index]
+                    if IndexInGlobalEnvironmentOverride ~= nil then
+                        return IndexInGlobalEnvironmentOverride
+                    end
+
+                    return RealEnvironment[index]
+                end,
+                __newindex = function(_, index, newValue)
+                    rawset(VirtualEnvironment, index, newValue)
+                end
+            })
+
+            setfenv(Closure, VirtualEnvironment)
+        end
+
+        local ClosureCoroutine = coroutine.wrap(Closure)
+
+        if scriptObject:IsA("BaseScript") then
+            local ClosureThread = if scriptObject.Enabled then task.defer(ClosureCoroutine) else nil
+
+            local EnabledChangedConnection
+            EnabledChangedConnection = scriptObject:GetPropertyChangedSignal("Enabled"):Connect(function(newEnabledState)
+                EnabledChangedConnection:Disconnect()
+
+                if newEnabledState == true then
+                    LoadScript(scriptObject)
+                else
+                    pcall(task.cancel, ClosureThread)
+                end
+            end)
+
+            return
+        else
+            local ClosureReturn = {ClosureCoroutine()}
+            StoredModuleValues[scriptObject] = ClosureReturn
+            return unpack(ClosureReturn)
+        end
+    end
+
+    for _, ReferenceInfo in next, ReferencesToSet do
+        pcall(function()
+            ReferenceInfo.InstanceObject[ReferenceInfo.Property] = ReferenceBindings[ReferenceInfo.ReferenceId]
+        end)
+    end
+
+    for _, ScriptObject in next, ScriptsToRun do
+        if (IsServer and ScriptObject.ClassName == "Script") or (IsClient and ScriptObject.ClassName == "LocalScript") then
+            LoadScript(ScriptObject)
+        end
+    end
+end

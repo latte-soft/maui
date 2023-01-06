@@ -1,0 +1,1 @@
+print("test 1: " .. tostring(getfenv(0)) .. ", " .. tostring(getfenv(1)))

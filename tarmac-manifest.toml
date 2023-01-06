@@ -1,0 +1,9 @@
+[inputs."assets/MauiLogo-DarkMode.png"]
+hash = "72cade0d62782587caed0fe68a43d1183f59971ad6eb0c97cc6d58f3c7c9a5f0"
+id = 11915749895
+packable = false
+
+[inputs."assets/MauiLogo-LightMode.png"]
+hash = "fac564f5fe656fc88c6c9704b22c1b6b8e1485fbe03d68f9b6a3a14cbabb0ff8"
+id = 11915749962
+packable = false

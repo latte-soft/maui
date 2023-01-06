@@ -1,0 +1,8 @@
+{
+    "FormatVersion": 1,
+
+    "Output": {
+        "MinifyTable": true,
+        "UseMinifiedLoader": true
+    }
+}

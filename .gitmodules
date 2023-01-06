@@ -1,0 +1,3 @@
+[submodule "submodules/_Index/Fusion"]
+	path = submodules/_Index/Fusion
+	url = https://github.com/Elttob/Fusion.git

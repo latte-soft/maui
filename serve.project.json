@@ -1,0 +1,30 @@
+{
+    "name": "MauiPlaceServe",
+    "tree": {
+        "$className": "DataModel",
+
+        "ServerStorage": {
+            "$className": "ServerStorage",
+
+            "Maui": {
+                "$className": "Folder",
+
+                "Maui": {
+                    "$path": "default.project.json"
+                },
+
+                "MauiMinified": {
+                    "$path": "min.project.json"
+                },
+
+                "Tests": {
+                    "$path": "tests"
+                },
+
+                "TestsMinified": {
+                    "$path": "dist/tests"
+                }
+            }
+        }
+    }
+}
