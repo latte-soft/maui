@@ -11,5 +11,5 @@ realm = "shared"
 registry = "https://github.com/UpliftGames/wally-index"
 
 [dependencies]
-LuaEncode = "regginator/luaencode@1.1.4"
+LuaEncode = "regginator/luaencode@1.1.5"
 # Will use Fusion 0.2 with Wally once it's actually prod published!
