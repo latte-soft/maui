@@ -8,8 +8,6 @@
     templates respectively
 ]]
 
-local HttpService = game:GetService("HttpService")
-
 local Root = script.Parent
 local Packages = Root.Packages
 

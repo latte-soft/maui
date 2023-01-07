@@ -91,24 +91,33 @@ return function(plugin, pluginWidget)
                     return
                 end
 
-                -- Replace all eligable options
-                local function RecursiveAddOptions(realTable, tableToAddFrom)
-                    for Key, NewValue in tableToAddFrom do
-                        if realTable[Key] ~= nil then -- Then it's in the real default options, we can add
-                            -- If the value is just another table, we'll recursively go thru (yep:tm: x2)
-                            if type(NewValue) == "table" then
-                                RecursiveAddOptions(realTable[Key], NewValue)
-                                continue
-                            end
-
-                            realTable[Key] = NewValue
-                        else
-                            Log("Invalid option \"" .. tostring(Key) .. "\" in `.maui` project file, did you make a typo?")
-                        end
-                    end
+                if MauiProjectFile["FormatVersion"] and MauiProjectFile.FormatVersion ~= 1 then
+                    Log("Invalid format version in `.maui` project file. Expected 1, got " .. tostring(MauiProjectFile.FormatVersion))
+                    return
                 end
 
-                RecursiveAddOptions(Options, MauiProjectFile)
+                Log("Reading `.maui` project file..")
+
+                -- Replace all eligable options for output
+                if MauiProjectFile["Output"] then
+                    local function RecursiveAddOptions(realTable, outputOptions)
+                        for Key, NewValue in outputOptions do
+                            if realTable[Key] ~= nil then -- Then it's in the real default options, we can add
+                                -- If the value is just another table, we'll recursively go thru (yep:tm: x2)
+                                if type(NewValue) == "table" then
+                                    RecursiveAddOptions(realTable[Key], NewValue)
+                                    continue
+                                end
+
+                                realTable[Key] = NewValue
+                            else
+                                Log("Invalid output option \"" .. tostring(Key) .. "\" in project file, did you make a typo?", 2)
+                            end
+                        end
+                    end
+
+                    RecursiveAddOptions(Options.Output, MauiProjectFile.Output)
+                end
             end
         end
 

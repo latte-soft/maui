@@ -17,6 +17,24 @@ local CONFIG = {
     CacheDelay = 60 * 15 -- 15 mins
 }
 
+-- The API dump isn't 100% reliable, and we don't want to encode any properties
+-- that are really just aliases of another. This is NOT all of the props you need to respect
+-- for *input*, just actually reading an object would be useful to respect these
+local WhitelistedProperties = {
+    Instance = {"Archivable"},
+    BallSocketConstraint = {"MaxFrictionTorque"},
+    BasePart = {"Size", "Color", "MaterialVariant"},
+    Fire = {"Heat", "Size"},
+    LocalizationTable = {"Root"},
+    Part = {"Shape"},
+    TrussPart = {"Style"},
+    Smoke = {"Opacity", "RiseVelocity", "Size"},
+    Sound = {"RollOffMaxDistance", "RollOffMinDistance"},
+    WeldConstraint = {"Enabled", "Part0", "Part1"}
+}
+
+local BlacklistedProperties = {}
+
 -- Cache the current API dump for however long (`CONFIG.CacheDelay`)
 local CurrentApiDump, ApiDumpLastFetched
 
@@ -99,6 +117,8 @@ local function GetInstanceProperties()
         -- OWN properties for now, inheritance will be handled next
         for _, ClassObject in ApiDump.Classes do
             local Properties = {}
+            local ClassWhitelistedProperties = WhitelistedProperties[ClassObject.Name]
+            local ClassBlacklistedProperties = BlacklistedProperties[ClassObject.Name]
 
             -- Assign inherited classes (again, for later!)
             if ClassObject.Superclass ~= "<<<ROOT>>>" then
@@ -116,8 +136,14 @@ local function GetInstanceProperties()
 
             -- Go through prop members of the current class now
             for _, MemberObject in ClassObject.Members do
-                -- It isn't always a property, and `CanSave` and `CanLoad` need to be true
-                if MemberObject.MemberType == "Property" and MemberObject.Serialization.CanSave and MemberObject.Serialization.CanLoad then
+                local PropertyName = MemberObject.Name
+
+                if ClassBlacklistedProperties and table.find(ClassBlacklistedProperties, PropertyName) then
+                    continue
+                end
+
+                -- It isn't always a property, and we may need to check whitelisted props too
+                if MemberObject.MemberType == "Property" and ((MemberObject.Serialization and MemberObject.Serialization.CanSave) or (ClassWhitelistedProperties and table.find(ClassWhitelistedProperties, PropertyName))) then
                     table.insert(Properties, MemberObject.Name)
                 end
             end

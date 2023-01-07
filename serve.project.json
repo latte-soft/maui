@@ -9,11 +9,11 @@
             "Maui": {
                 "$className": "Folder",
 
-                "Maui": {
+                "MauiDev": {
                     "$path": "default.project.json"
                 },
 
-                "MauiMinified": {
+                "Maui": {
                     "$path": "min.project.json"
                 },
 
