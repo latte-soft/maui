@@ -16,7 +16,7 @@ local CachedPropertyValues = {} -- [ClassName] = {[PropertyName] = DefaultValue,
 -- Like Roact!
 local PropertyValueOfNil = setmetatable(getmetatable(newproxy(true)), {__tostring = "PropertyValueOfNil"})
 
--- Returns `DidReadValue`, `DefaultValue`; if `DidReadValue` is fakse, the `Instance.new` call failed
+-- Returns `DefaultValue`, `PropertyValueIsNil`
 local function GetDefaultInstanceProperty(className, propertyToGet)
     local CachedInstance = CachedInstances[className]
     local CachedProperties = CachedPropertyValues[propertyToGet]
@@ -27,11 +27,11 @@ local function GetDefaultInstanceProperty(className, propertyToGet)
         -- Like noted in Roact's script, Lua doesn't tell the diff between a value actually being nil, or
         -- just not in a table. We'll use userdata symbols for if the property's default value is ACTUALLY nil
         if PropertyInCache == PropertyValueOfNil then
-            return true, nil
+            return nil, true
         end
 
         if PropertyInCache ~= nil then
-            return true, PropertyInCache
+            return PropertyInCache, false
         end
     else
         -- Then add it
@@ -44,8 +44,7 @@ local function GetDefaultInstanceProperty(className, propertyToGet)
         local CreatedOk, NewInstance = pcall(Instance.new, className)
 
         if not CreatedOk then
-            -- `DidReadValue` false!
-            return false, nil
+            return nil, false
         end
 
         CachedInstance = NewInstance
@@ -61,7 +60,7 @@ local function GetDefaultInstanceProperty(className, propertyToGet)
         CachedProperties[propertyToGet] = DefaultValue
     end
 
-    return DefaultValue
+    return DefaultValue, if DefaultValue == nil then true else false
 end
 
 return GetDefaultInstanceProperty

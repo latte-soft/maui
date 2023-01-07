@@ -157,7 +157,8 @@ local function BuildFromSelection(selection, options, log)
 
                     local PropertyValue = instanceObject[PropertyName]
 
-                    if PropertyValue == GetDefaultInstanceProperty(ClassName, PropertyName) then
+                    local DefaultValue, PropertyValueIsNil = GetDefaultInstanceProperty(ClassName, PropertyName)
+                    if not (DefaultValue == nil and not PropertyValueIsNil) and PropertyValue == DefaultValue then
                         continue
                     end
 
