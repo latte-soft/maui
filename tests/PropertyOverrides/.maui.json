@@ -1,0 +1,12 @@
+{
+    "FormatVersion": 1,
+
+    "Properties": {
+        "Whitelist": {
+            "BasePart": ["BrickColor"]
+        },
+        "Blacklist": {
+            "BasePart": ["Color"]
+        }
+    }
+}

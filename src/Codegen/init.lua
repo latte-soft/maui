@@ -59,13 +59,15 @@ end
 
 -- Build script directly from a selection, passes through the console logging func
 -- This returns the built script, IF it succeeded
-local function BuildFromSelection(selection, options, log)
-    local MinifyTable = options.Output.MinifyTable
-    local UseMinifiedLoader = options.Output.UseMinifiedLoader
+local function BuildFromSelection(selection, log, options, projectFileModule)
+    local MinifyTable = if options then options.Output.MinifyTable else false
+    local UseMinifiedLoader = if options then options.Output.UseMinifiedLoader else true
 
     -- Get instance properties from API dump (uses http)
     log("Retrieving all instance properties from API dump..", 2)
-    local InstanceProperties, WasCached = GetInstanceProperties()
+
+    -- We'll provide any overrides as an arg
+    local InstanceProperties, WasCached = GetInstanceProperties(options and options.Properties)
 
     assert(InstanceProperties, "Failed to get API dump, did you forget to allow HTTP requests on the plugin?")
 
@@ -94,6 +96,10 @@ local function BuildFromSelection(selection, options, log)
 
             local ScrapedChildren = {} do
                 for _, Child in instanceObject:GetChildren() do
+                    if projectFileModule and Child == projectFileModule then
+                        continue
+                    end
+
                     ScrapedChildren[Child] = ScrapeInstanceChildren(Child)
                 end
             end

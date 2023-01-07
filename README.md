@@ -160,10 +160,17 @@ You can place a module named ".maui" under the model you're building, and Maui w
 ```lua
 return {
     FormatVersion = 1, -- Isn't necessary in the project file, but just for future proofing the format incase we ever change anything
+
     -- All output options
     Output = {
-        MinifyTable = true, -- If the codegen table itself (made from LuaEncode) is to be minified
-        UseMinifiedLoader" = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
+        MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
+        UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
+    },
+
+    -- Property wl/bl overrides
+    Properties = {
+        Whitelist = {}, -- [ClassName] = {PropertyName, ...}
+        Blacklist = {} --  ^^^
     }
 }
 ```
@@ -173,9 +180,15 @@ You can *also* use [Rojo's JSON module feature](https://rojo.space/docs/v7/sync-
 ```json
 {
     "FormatVersion": 1,
+
     "Output": {
         "MinifyTable": true,
         "UseMinifiedLoader": true
+    },
+
+    "Properties": {
+        "Whitelist": {},
+        "Blacklist": {}
     }
 }
 ```

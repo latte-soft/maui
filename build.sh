@@ -46,18 +46,22 @@ log "Creating dist.."
 mkdir -p dist
 
 log "Minifying \"/src\".." 2
+rm -rf dist/src
 cp -rf src dist
 darklua process dist/src dist/src
 
 log "Minifying \"/submodules\".." 2
+rm -rf dist/submodules
 cp -rf submodules dist
 darklua process dist/submodules dist/submodules
 
 log "Minifying \"/Packages\".." 2
+rm -rf dist/Packages
 cp -rf Packages dist
 darklua process dist/Packages dist/Packages
 
 log "Minifying \"/tests\".." 2
+rm -rf dist/tests
 cp -rf tests dist
 darklua process dist/tests dist/tests
 

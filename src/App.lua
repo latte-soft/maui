@@ -23,13 +23,21 @@ local Fusion = require(Submodules.Fusion)
 -- Constants
 local DEFAULT_CONSOLE_TEXT = "Maui | Copyright (c) 2022-2023 Latte Softworks <latte.to>\nGitHub: latte-soft/maui\n\nTo build a new script from a model, make a selection in your explorer, then just use the options below.\nRight click this console for further options.\n\n"
 local INITIAL_OUTPUT_TEXT = "-- Maui: Waiting to add real script output to the editor..\n"
+
 -- Default options for the `.maui` format
 local DEFAULT_OPTIONS = {
     FormatVersion = 1, -- Isn't necessary in the project file, but just for future proofing the format incase we ever change anything
+
     -- All output options
     Output = {
         MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
+    },
+
+    -- Property wl/bl overrides
+    Properties = {
+        Whitelist = {}, -- [ClassName] = {PropertyName, ...}
+        Blacklist = {} --  ^^^
     }
 }
 
@@ -81,8 +89,7 @@ return function(plugin, pluginWidget)
         end
 
         -- Get default options, and if there's a `.maui` project file, use those
-        local Options = DeepClone(DEFAULT_OPTIONS) do
-            local MauiProjectFileModule = FirstObjectSelected:FindFirstChild(".maui") -- This will be `.maui.json` or `.maui.lua` if built from rojo
+        local Options, MauiProjectFileModule = DeepClone(DEFAULT_OPTIONS), FirstObjectSelected:FindFirstChild(".maui") do 
             if MauiProjectFileModule then
                 -- Try to read and parse project format
                 local MauiProjectFile = require(MauiProjectFileModule)
@@ -118,6 +125,30 @@ return function(plugin, pluginWidget)
 
                     RecursiveAddOptions(Options.Output, MauiProjectFile.Output)
                 end
+
+                -- Handle custom property overwrites
+                if MauiProjectFile["Properties"] then
+                    local PropertyOptions = MauiProjectFile["Properties"]
+
+                    local Whitelist = PropertyOptions["Whitelist"]
+                    local Blacklist = PropertyOptions["Blacklist"]
+
+                    if Whitelist then
+                        local RealWhitelist = Options.Properties.Whitelist
+
+                        for ClassName, ClassProperties in Whitelist do
+                            RealWhitelist[ClassName] = ClassProperties
+                        end
+                    end
+
+                    if Blacklist then
+                        local RealBlacklist = Options.Properties.Blacklist
+
+                        for ClassName, ClassProperties in Blacklist do
+                            RealBlacklist[ClassName] = ClassProperties
+                        end
+                    end
+                end
             end
         end
 
@@ -129,7 +160,7 @@ return function(plugin, pluginWidget)
         Log("Attempting to build script \"" .. ScriptName .. "\"")
 
         -- Pass through the log function aswell, for detailed steps of what the assembler is actually doing
-        local DidBuild, GeneratedScriptOrError = pcall(Codegen.BuildFromSelection, SelectionToBuild, Options, Log)
+        local DidBuild, GeneratedScriptOrError = pcall(Codegen.BuildFromSelection, SelectionToBuild, Log, Options, MauiProjectFileModule)
 
         if not DidBuild then
             Log("Failed to build due to error: \"" .. GeneratedScriptOrError or "[No error message attached]" .. "\"", 2)

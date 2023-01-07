@@ -86,8 +86,8 @@ local function GetApiDump(_currentRetryCount)
     return ApiDumpJson, false
 end
 
-local function GetInstanceProperties()
-    local ApiDump = GetApiDump()
+local function GetInstanceProperties(propertyOverrides)
+    local ApiDump, WasCached = GetApiDump()
 
     if not ApiDump then
         error("Maui: Failed to get API dump: No value returned", 0)
@@ -101,7 +101,7 @@ local function GetInstanceProperties()
             tostring(ApiDump.Version) -- JIC it's not actually a number, just get the raw val
         ))
 
-        return
+        return nil, WasCached
     end
 
     -- All instance properties will be placed here
@@ -117,8 +117,14 @@ local function GetInstanceProperties()
         -- OWN properties for now, inheritance will be handled next
         for _, ClassObject in ApiDump.Classes do
             local Properties = {}
-            local ClassWhitelistedProperties = WhitelistedProperties[ClassObject.Name]
-            local ClassBlacklistedProperties = BlacklistedProperties[ClassObject.Name]
+            local ClassName = ClassObject.Name
+
+            local ClassWhitelistedProperties = WhitelistedProperties[ClassName]
+            local ClassBlacklistedProperties = BlacklistedProperties[ClassName]
+
+            -- The .maui project file inputted property overrides, if given
+            local ClassWhitelistedOverrides = propertyOverrides and propertyOverrides.Whitelist[ClassName]
+            local ClassBlacklistedOverrides = propertyOverrides and propertyOverrides.Blacklist[ClassName]
 
             -- Assign inherited classes (again, for later!)
             if ClassObject.Superclass ~= "<<<ROOT>>>" then
@@ -138,12 +144,12 @@ local function GetInstanceProperties()
             for _, MemberObject in ClassObject.Members do
                 local PropertyName = MemberObject.Name
 
-                if ClassBlacklistedProperties and table.find(ClassBlacklistedProperties, PropertyName) then
+                if (ClassBlacklistedProperties and table.find(ClassBlacklistedProperties, PropertyName)) or (ClassBlacklistedOverrides and table.find(ClassBlacklistedOverrides, PropertyName)) then
                     continue
                 end
 
                 -- It isn't always a property, and we may need to check whitelisted props too
-                if MemberObject.MemberType == "Property" and ((MemberObject.Serialization and MemberObject.Serialization.CanSave) or (ClassWhitelistedProperties and table.find(ClassWhitelistedProperties, PropertyName))) then
+                if MemberObject.MemberType == "Property" and ((MemberObject.Serialization and MemberObject.Serialization.CanSave) or (ClassWhitelistedProperties and table.find(ClassWhitelistedProperties, PropertyName)) or (ClassWhitelistedOverrides and table.find(ClassWhitelistedOverrides, PropertyName))) then
                     table.insert(Properties, MemberObject.Name)
                 end
             end
@@ -167,7 +173,7 @@ local function GetInstanceProperties()
         end
     end
 
-    return InstanceProperties
+    return InstanceProperties, WasCached
 end
 
 return GetInstanceProperties

@@ -1,0 +1,7 @@
+{
+    "ClassName": "Part",
+    "Properties": {
+        "Color": [1, 1, 1],
+        "Position": [0, 5, 0]
+    }
+}
