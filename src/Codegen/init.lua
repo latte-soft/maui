@@ -179,7 +179,7 @@ local function BuildFromSelection(selection, log, options, projectFileModule)
                             ObjectTree.RefProperties = {}
                         end
 
-                        local ReferenceId = table.find(ReferenceIds, instanceObject)
+                        local ReferenceId = table.find(ReferenceIds, PropertyValue)
                         if ReferenceId then
                             ObjectTree.RefProperties[PropertyName] = ReferenceId
                         end
