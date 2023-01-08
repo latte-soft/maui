@@ -66,26 +66,18 @@ end
 -- Fixes "invalid unicode" error w/ EditTextAsync if there's unicode in any closure comments removed from orig.
 -- This was taken from our LuaEncode project: https://github.com/regginator/LuaEncode/blob/master/src/LuaEncode.lua#L48-L86
 local EscapeUnicode do
-    local SpecialCharacters = {
-        ["\a"] = "\\a", -- Bell; ASCII #7
-        ["\b"] = "\\b", -- Backspace; ASCII #8
-        ["\t"] = "\\t", -- Horizontal-Tab; ASCII #9
-        ["\n"] = "\\n", -- Newline; ASCII #10
-        ["\v"] = "\\v", -- Vertical-Tab; ASCII #11
-        ["\f"] = "\\f", -- Form-Feed; ASCII #12
-        ["\r"] = "\\r", -- Carriage-Return; ASCII #13
-    }
+    local SpecialCharacters = {}
 
     for Index = 0, 255 do
         local Character = string.char(Index)
 
-        if not SpecialCharacters[Character] and (Index < 32 or Index > 126) then
+        if not SpecialCharacters[Character] and Index > 126 then
             SpecialCharacters[Character] = "\\" .. Index
         end
     end
 
     function EscapeUnicode(inputString)
-        return string.gsub(inputString, "[\"\\\0-\31\127-\255]", SpecialCharacters)
+        return string.gsub(inputString, "[\127-\255]", SpecialCharacters)
     end
 end
 
