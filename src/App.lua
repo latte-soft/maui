@@ -63,6 +63,32 @@ local function DeepClone(inputTable)
     return NewTable
 end
 
+-- Fixes "invalid unicode" error w/ EditTextAsync if there's unicode in any closure comments removed from orig.
+-- This was taken from our LuaEncode project: https://github.com/regginator/LuaEncode/blob/master/src/LuaEncode.lua#L48-L86
+local EscapeUnicode do
+    local SpecialCharacters = {
+        ["\a"] = "\\a", -- Bell; ASCII #7
+        ["\b"] = "\\b", -- Backspace; ASCII #8
+        ["\t"] = "\\t", -- Horizontal-Tab; ASCII #9
+        ["\n"] = "\\n", -- Newline; ASCII #10
+        ["\v"] = "\\v", -- Vertical-Tab; ASCII #11
+        ["\f"] = "\\f", -- Form-Feed; ASCII #12
+        ["\r"] = "\\r", -- Carriage-Return; ASCII #13
+    }
+
+    for Index = 0, 255 do
+        local Character = string.char(Index)
+
+        if not SpecialCharacters[Character] and (Index < 32 or Index > 126) then
+            SpecialCharacters[Character] = "\\" .. Index
+        end
+    end
+
+    function EscapeUnicode(inputString)
+        return string.gsub(inputString, "[\"\\\0-\31\127-\255]", SpecialCharacters)
+    end
+end
+
 return function(plugin, pluginWidget)
     -- We need to pass through the plugin object here
     local PluginSettings = require(Root.PluginSettings)(plugin)
@@ -206,17 +232,26 @@ return function(plugin, pluginWidget)
 
             Log("Opened from location \"" .. ScriptObject:GetFullName() .. "\", adding output..", 2)
 
-            local ScriptDocument = ScriptEditorService:FindScriptDocument(ScriptObject)
-            if not ScriptDocument then
-                error("Failed to get the open `ScriptDocument` object to edit source, was the script disallowed from opening?", 0)
-            end
+            if #GeneratedScriptOrError < 200000 then
+                ScriptObject.Source = GeneratedScriptOrError
+            else
+                -- Yes, this is VERY HACKY, but we have to do this instead due to `Script.Source`'s internal
+                -- __newindex set limit. We have to escape all "invalid" unicode from strings in the script,
+                -- or `ScriptDocument:EditTextAsync` will error with a cryptic message to the user
+                local EscapedScript = EscapeUnicode(GeneratedScriptOrError)
 
-            local DidEdit, EditTextErrorMessage = ScriptDocument:EditTextAsync(GeneratedScriptOrError, 1, 1, 1, #GeneratedScriptOrError)
+                local ScriptDocument = ScriptEditorService:FindScriptDocument(ScriptObject)
+                if not ScriptDocument then
+                    error("Failed to get the open `ScriptDocument` object to edit source, was the script disallowed from opening?", 0)
+                end
 
-            if DidEdit then
-                Log("Added full output to script", 2)
-            elseif EditTextErrorMessage then
-                error("`ScriptDocument:EditTextAsync` error: " .. EditTextErrorMessage, 0)
+                local DidEdit, EditTextErrorMessage = ScriptDocument:EditTextAsync(EscapedScript, 1, 1, 1, #EscapedScript)
+
+                if DidEdit then
+                    Log("Added full output to script", 2)
+                elseif EditTextErrorMessage then
+                    error("`ScriptDocument:EditTextAsync` error: " .. EditTextErrorMessage, 0)
+                end
             end
         end)
 
