@@ -7,7 +7,6 @@
     Desc: Initializes the front-end app client, works with codegen assembler and Fusion
     components for UI
 ]]
-local HttpService = game:GetService("HttpService")
 
 local ServerStorage = game:GetService("ServerStorage")
 local Selection = game:GetService("Selection")
