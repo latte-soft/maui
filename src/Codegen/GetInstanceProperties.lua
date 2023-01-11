@@ -14,7 +14,7 @@ local CONFIG = {
     ApiDumpUrl = "https://github.com/MaximumADHD/Roblox-Client-Tracker/raw/roblox/Mini-API-Dump.json",
     HttpMaxRetryAttempts = 5,
     HttpRetryDelay = 5,
-    CacheDelay = 60 * 15 -- 15 mins
+    CacheDelay = 60 * 60 * 1.5 -- 1h30m
 }
 
 -- The API dump isn't 100% reliable, and we don't want to encode any properties
