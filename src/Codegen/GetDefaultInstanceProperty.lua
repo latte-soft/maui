@@ -14,7 +14,7 @@ local CachedInstances = {} -- [ClassName] = SomeInstance
 local CachedPropertyValues = {} -- [ClassName] = {[PropertyName] = DefaultValue, ...}
 
 -- Like Roact!
-local PropertyValueOfNil = setmetatable(getmetatable(newproxy(true)), {__tostring = "PropertyValueOfNil"})
+local PropertyValueOfNil = newproxy()
 
 -- Returns `DefaultValue`, `PropertyValueIsNil`
 local function GetDefaultInstanceProperty(className, propertyToGet)
