@@ -158,13 +158,13 @@ do
         local ClosureCoroutine = coroutine.wrap(Closure)
 
         if scriptObject:IsA("BaseScript") then
-            local ClosureThread = if scriptObject.Enabled then task.defer(ClosureCoroutine) else nil
+            local ClosureThread = not scriptObject.Disabled and task.defer(ClosureCoroutine)
 
-            local EnabledChangedConnection
-            EnabledChangedConnection = scriptObject:GetPropertyChangedSignal("Enabled"):Connect(function(newEnabledState)
-                EnabledChangedConnection:Disconnect()
+            local DisabledChangedConnection
+            DisabledChangedConnection = scriptObject:GetPropertyChangedSignal("Disabled"):Connect(function(newDisabledState)
+                DisabledChangedConnection:Disconnect()
 
-                if newEnabledState == true then
+                if newDisabledState == false then
                     LoadScript(scriptObject)
                 else
                     pcall(task.cancel, ClosureThread)
