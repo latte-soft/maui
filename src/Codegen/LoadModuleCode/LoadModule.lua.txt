@@ -149,9 +149,6 @@ do
                     end
 
                     return RealEnvironment[index]
-                end,
-                __newindex = function(_, index, newValue)
-                    rawset(VirtualEnvironment, index, newValue)
                 end
             })
 
