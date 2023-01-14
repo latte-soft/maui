@@ -1,0 +1,8 @@
+{
+    "FormatVersion": 1,
+
+    "Output": {
+        "Directory": "return script.Parent",
+        "ScriptName": "MauiGeneratedOutput"
+    }
+}

@@ -23,12 +23,18 @@ local Fusion = require(Submodules.Fusion)
 local DEFAULT_CONSOLE_TEXT = "Maui | Copyright (c) 2022-2023 Latte Softworks <latte.to>\nGitHub: latte-soft/maui\n\nTo build a new script from a model, make a selection in your explorer, then just use the options below.\nRight click this console for further options.\n\n"
 local INITIAL_OUTPUT_TEXT = "-- Maui: Waiting to add real script output to the editor..\n"
 
--- Default options for the `.maui` format
+-- Default options for the `.maui` format, assign a "Nil" marker for use later aswell
+local Nil = newproxy()
 local DEFAULT_OPTIONS = {
     FormatVersion = 1, -- Isn't necessary in the project file, but just for future proofing the format incase we ever change anything
 
     -- All output options
     Output = {
+        -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename, like so:
+        -- "return game:GetService("ServerStorage").SomeFolder"
+        Directory = Nil,
+        ScriptName = Nil, -- The actual name of the output script object, e.g. "SomeScript"
+
         MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
     },
@@ -106,7 +112,7 @@ return function(plugin, pluginWidget)
         end
 
         -- Get default options, and if there's a `.maui` project file, use those
-        local Options, MauiProjectFileModule = DeepClone(DEFAULT_OPTIONS), FirstObjectSelected:FindFirstChild(".maui") do 
+        local Options, MauiProjectFileModule = DeepClone(DEFAULT_OPTIONS), FirstObjectSelected:FindFirstChild(".maui") do
             if MauiProjectFileModule then
                 -- Try to read and parse project format
                 local MauiProjectFile = require(MauiProjectFileModule)
@@ -116,7 +122,7 @@ return function(plugin, pluginWidget)
                 end
 
                 if MauiProjectFile["FormatVersion"] and MauiProjectFile.FormatVersion ~= 1 then
-                    Log("Invalid format version in `.maui` project file. Expected 1, got " .. tostring(MauiProjectFile.FormatVersion))
+                    Log("Invalid format version in `.maui` project file; expected 1, got " .. tostring(MauiProjectFile.FormatVersion))
                     return
                 end
 
@@ -172,7 +178,23 @@ return function(plugin, pluginWidget)
         -- Make the first object in the selection (USUALLY the only) the name of the outputted script, just
         -- so we can have something to base off of. We'll remove all ctrl chars, spaces, and periods from this
         -- string, so it's a little more friendly for the explorer. We'll also truncate to 50 characters
-        local ScriptName = FirstObjectSelected.Name:sub(1, 50):gsub("[\0-\31\127-\255]", ""):gsub("[\32%.]", "_")
+        local ScriptName, UsingCustomScriptName do
+            -- This will just be "nil" if it doesn't exist, so no check
+            local ScriptNameInOptions = Options.Output.ScriptName
+            local ScriptNameInOptionsType = type(Options.Output.ScriptName)
+
+            if ScriptNameInOptionsType == "string" then
+                ScriptName = ScriptNameInOptions
+                UsingCustomScriptName = true
+            elseif ScriptNameInOptions ~= nil and ScriptNameInOptions ~= Nil then
+                -- ^^ We'll just handle if it's provided, but not a str (would've passed above check if it were provided and was a str)
+                Log("Invalid type for `Options.Output.ScriptName`; expected \"string\", got \"" .. ScriptNameInOptionsType .. "\"", 2)
+                return
+            else
+                ScriptName = FirstObjectSelected.Name:sub(1, 50):gsub("[\0-\31\127-\255]", ""):gsub("[\32%.]", "_")
+                UsingCustomScriptName = false
+            end
+        end
 
         Log("Attempting to build script \"" .. ScriptName .. "\"")
 
@@ -186,43 +208,124 @@ return function(plugin, pluginWidget)
 
         Log("Successfully built, opening..", 2)
 
-        -- ServerStorage["Maui | Built Scripts"]
-        local MauiScriptsFolder = ServerStorage:FindFirstChild("Maui | Built Scripts")
-        if not MauiScriptsFolder then
-            MauiScriptsFolder = Instance.new("Folder")
-            MauiScriptsFolder.Name = "Maui | Built Scripts"
-            MauiScriptsFolder.Parent = ServerStorage
-        end
+        local Directory do
+            local DirectoryInOptions = Options.Output.Directory
+            local DirectoryInOptionsTypeOf = typeof(Options.Output.Directory)
 
-        -- ServerStorage["Maui | Built Scripts"][ScriptName]
-        local SpecificScriptBuilds = MauiScriptsFolder:FindFirstChild(ScriptName)
-        if not SpecificScriptBuilds then
-            SpecificScriptBuilds = Instance.new("Folder")
-            SpecificScriptBuilds.Name = ScriptName
-            SpecificScriptBuilds.Parent = MauiScriptsFolder
+            -- So we aren't writing the same code twice.. (Since Options.Output.Directory respects both strings and funcs)
+            local function GetDirectoryFromFunction(functionToCall)
+                local ExpectedReturnPath = functionToCall()
+                local ExpectedReturnPathTypeOf = typeof(ExpectedReturnPath)
+
+                if ExpectedReturnPathTypeOf ~= "Instance" then
+                    Log("Invalid return type for `Options.Output.Directory`; expected \"string\", got \"" .. ExpectedReturnPathTypeOf .. "\"", 2)
+                    return
+                end
+
+                return ExpectedReturnPath
+            end
+
+            if DirectoryInOptionsTypeOf == "Instance" then
+                Directory = DirectoryInOptions
+            elseif DirectoryInOptionsTypeOf == "string" then
+                -- We're expecting strings of this option to be literal Lua code that returns the path to use
+                local DirectoryReturnClosure, ErrorMessage = loadstring(DirectoryInOptions)
+
+                if not DirectoryReturnClosure then
+                    Log("Expected valid Lua code for `Options.Output.Directory` (since a string was provided), but there was an error in loadstring: \"" .. tostring(ErrorMessage) .. "\"", 2)
+                    return
+                end
+
+                -- We'll give the closure it's own `script` global so it can reference relative to itself
+                do
+                    local RealEnvironment = getfenv(0)
+                    local GlobalEnvironmentOverride = {
+                        ["script"] = MauiProjectFileModule
+                    }
+
+                    -- Took this from the codegen's handler, works perfectly
+                    local VirtualEnvironment
+                    VirtualEnvironment = setmetatable({}, {
+                        __index = function(_, index)
+                            local IndexInVirtualEnvironment = rawget(VirtualEnvironment, index)
+                            if IndexInVirtualEnvironment ~= nil then
+                                return IndexInVirtualEnvironment
+                            end
+
+                            local IndexInGlobalEnvironmentOverride = GlobalEnvironmentOverride[index]
+                            if IndexInGlobalEnvironmentOverride ~= nil then
+                                return IndexInGlobalEnvironmentOverride
+                            end
+
+                            return RealEnvironment[index]
+                        end
+                    })
+
+                    setfenv(DirectoryReturnClosure, VirtualEnvironment)
+                end
+
+                Directory = GetDirectoryFromFunction(DirectoryReturnClosure)
+                if not Directory then
+                    return
+                end
+            elseif DirectoryInOptionsTypeOf == "function" then
+                Directory = GetDirectoryFromFunction(DirectoryInOptions)
+                if not Directory then
+                    return
+                end
+            elseif DirectoryInOptions ~= nil and DirectoryInOptions ~= Nil then
+                Log("Invalid type for `Options.Output.Directory`; expected \"string\", got \"" .. DirectoryInOptionsTypeOf .. "\"", 2)
+                return
+            else
+                -- ServerStorage["Maui | Built Scripts"]
+                local MauiScriptsFolder = ServerStorage:FindFirstChild("Maui | Built Scripts")
+                if not MauiScriptsFolder then
+                    MauiScriptsFolder = Instance.new("Folder")
+                    MauiScriptsFolder.Name = "Maui | Built Scripts"
+                    MauiScriptsFolder.Parent = ServerStorage
+                end
+
+                -- ServerStorage["Maui | Built Scripts"][ScriptName]
+                Directory = MauiScriptsFolder:FindFirstChild(ScriptName)
+                if not Directory then
+                    Directory = Instance.new("Folder")
+                    Directory.Name = ScriptName
+                    Directory.Parent = MauiScriptsFolder
+                end
+            end
         end
 
         -- Studio may prompt the user to give the plugin access to writing `Script.Source`, it
         -- doesn't just yield and set it when they click "Allow", we have to do it again outselves
         -- ALSO, setting this property can err if the str is too long (yay!)
         local CreateScriptOk, ErrorMessage = pcall(function()
-            -- Create the real script obj
-            local ScriptObject = Instance.new("Script")
+            -- Create/find the real script obj
+            local ScriptObject
+            if UsingCustomScriptName then
+                ScriptObject = Directory:FindFirstChild(ScriptName) or Instance.new("Script")
+                ScriptObject.Name = ScriptName
+            else
+                ScriptObject = Instance.new("Script")
 
-            -- Format the current date-time into the name, just for basic organization for
-            -- the user. I'd make it just the epoch time, but just doing this for readability
-            ScriptObject.Name = os.date(ScriptName .. "_%Y-%m-%d_%H-%M-%S")
+                -- Format the current date-time into the name, just for basic organization for
+                -- the user. I'd make it just the epoch time, but just doing this for readability
+                ScriptObject.Name = os.date(
+                    FirstObjectSelected.Name:sub(1, 50):gsub("[\0-\31\127-\255]", ""):gsub("[\32%.]", "_") .. "_%Y%m%d_%H%M%S"
+                )
+            end
 
             pcall(function()
                 ScriptObject.Source = INITIAL_OUTPUT_TEXT
             end)
 
-            ScriptObject.Parent = SpecificScriptBuilds
+            ScriptObject.Parent = Directory
             Selection:Set({ScriptObject}) -- Select the script object for the "Save" button feature
             ScriptEditorService:OpenScriptDocumentAsync(ScriptObject)
 
             Log("Opened from location \"" .. ScriptObject:GetFullName() .. "\", adding output..", 2)
 
+            -- Setting LuaSourceContainer.Source with 200k chars or more gives us an error, if it isn't,
+            -- we'll use our other method
             if #GeneratedScriptOrError < 200000 then
                 ScriptObject.Source = GeneratedScriptOrError
             else

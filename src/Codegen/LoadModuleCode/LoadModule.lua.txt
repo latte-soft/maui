@@ -87,7 +87,6 @@ do
 
         do
             local VirtualEnvironment
-
             local GlobalEnvironmentOverride = {
                 ["maui"] = table.freeze({
                     Version = Version,

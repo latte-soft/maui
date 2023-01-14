@@ -83,7 +83,39 @@ Remember, because it [b]literally[/b] packs a Roblox model, you need to have at 
 
 [hr]
 
-[size=x-large][b]The [font=Courier].maui[/font] Project Format[/b][/size]
+[size=x-large][b]The [font=Courier].maui[/font] Script Global[/b][/size]
+
+In all Maui script closures, a "[font=Courier]maui[/font]" global is pushed into the environment. You could use it in a script like so:
+
+[code]if maui then -- Then the script is running under Maui's environment!
+    print(maui.Version)
+end[/code]
+
+Here's the [i]current[/i] API reference:
+
+[list]
+[*] [size=large][b]Get Version[/b][/size]
+
+  [font=Courier]<string> maui.Version[/font]
+
+  Returns a constant of the version of Maui the script was built with.
+
+[*] [size=large][b]Get Real Script Object[/b][/size]
+
+  [font=Courier]<Instance: LuaSourceContainer> maui.GetScript(<void>)[/font]
+
+  Returns the REAL script global from the closure that's currently running.
+
+[*] [size=large][b]Get Shared Environment Table[/b][/size]
+
+  [font=Courier]<table> maui.GetShared(<void>)[/font]
+
+  Returns a "shared" table for ALL closures in a Maui-generated script, so you don't need to the real `_G` or `shared`.
+[/list]
+
+[hr]
+
+[size=x-large][b]The "[font=Courier].maui[/font]" Project Format[/b][/size]
 [size=small][i]This is really meant for more advanced projects/modules you're packing, and right now there really isn't much outside of minification options.[/i][/size]
 
 You can place a module named ".maui" under the model you're building, and Maui will expect the return to be a table of options. Here's a Lua template for this:
@@ -93,6 +125,11 @@ You can place a module named ".maui" under the model you're building, and Maui w
 
     -- All output options
     Output = {
+        -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename, like so:
+        -- "return game:GetService("ServerStorage").SomeFolder"
+        Directory = "return script.Parent",
+        ScriptName = "MauiGeneratedScript", -- The actual name of the output script object, e.g. "SomeScript"
+
         MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
     },
@@ -110,7 +147,10 @@ You can [i]also[/i] use [url=https://rojo.space/docs/v7/sync-details/#json-modul
     "FormatVersion": 1,
 
     "Output": {
-        "MinifyTable": true,
+        "Directory": "return script.Parent",
+        "ScriptName": "MauiGeneratedScript",
+
+        "MinifyTable": false,
         "UseMinifiedLoader": true
     },
 

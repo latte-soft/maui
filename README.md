@@ -151,7 +151,45 @@ Remember, because it **literally** packs a Roblox model, you need to have at lea
 
 ___
 
-## The `.maui` Project Format
+## The `maui` Script Global
+
+In all Maui script closures, a "`maui`" global is pushed into the environment. You could use it in a script like so:
+
+```lua
+if maui then -- Then the script is running under Maui's environment!
+    print(maui.Version)
+end
+```
+
+Here's the *current* API reference:
+
+* ### Get Version
+
+  ```lua
+  <string> maui.Version
+  ```
+
+  Returns a constant of the version of Maui the script was built with.
+
+* ### Get Real Script Object
+
+  ```lua
+  <Instance: LuaSourceContainer> maui.GetScript(<void>)
+  ```
+
+  Returns the REAL script global from the closure that's currently running.
+
+* ### Get Shared Environment Table
+
+  ```lua
+  <table> maui.GetShared(<void>)
+  ```
+
+  Returns a "shared" table for ALL closures in a Maui-generated script, so you don't need to the real `_G` or `shared`.
+
+___
+
+## The "`.maui`" Project Format
 
 ##### *This is really meant for more advanced projects/modules you're packing, and right now there really isn't much outside of minification options.*
 
@@ -163,6 +201,11 @@ return {
 
     -- All output options
     Output = {
+        -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename, like so:
+        -- "return game:GetService("ServerStorage").SomeFolder"
+        Directory = "return script.Parent",
+        ScriptName = "MauiGeneratedScript", -- The actual name of the output script object, e.g. "SomeScript"
+
         MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
     },
@@ -182,7 +225,10 @@ You can *also* use [Rojo's JSON module feature](https://rojo.space/docs/v7/sync-
     "FormatVersion": 1,
 
     "Output": {
-        "MinifyTable": true,
+        "Directory": "return script.Parent",
+        "ScriptName": "MauiGeneratedScript",
+
+        "MinifyTable": false,
         "UseMinifiedLoader": true
     },
 
