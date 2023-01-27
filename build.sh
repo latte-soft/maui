@@ -28,6 +28,9 @@ mkdir -p "$build_path"
 cp LICENSE.txt "$build_path/LICENSE.txt"
 log "Copied LICENSE.txt to $build_path/LICENSE.txt"
 
+# Create base file for 2-way-sync thing
+touch "$build_path/Maui-Packed.lua"
+
 # Minifiy the `LoadModule.lua` in the codegen, this is for building prod specifically
 log "Minifying \`LoadModule.lua.txt\` codegen src.. (Renames the file for Darklua, then renames back)"
 cp -f src/Codegen/LoadModuleCode/LoadModule.lua.txt src/Codegen/LoadModuleCode/LoadModule.lua

@@ -2,6 +2,9 @@
     "FormatVersion": 1,
 
     "Output": {
+        "Directory": "return script.Parent.Parent.Builds[script.Parent.Version.Value]",
+        "ScriptName": "Maui-Packed",
+
         "MinifyTable": true,
         "UseMinifiedLoader": true
     }
