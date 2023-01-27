@@ -67,7 +67,7 @@ Maui is built with [LuaEncode](https://github.com/regginator/LuaEncode), another
 
 **The first thing you may be wondering if you clicked on the *"Get it on Roblox"* button before reading this** is probably something along the lines of **"Why is this a paid plugin?"**. Well, it *is* and it *isn't*. Let me explain.
 
-The plugin, and **all** of its source code, will **always** be 100% free (as-in freedom) & open source, under the GNU LGPLv3 License. You can download & build from source on the [GitHub repository](https://github.com/latte-soft/maui) (if you're worried about security or whatnot), or install a pre-built version directly from the [releases page](https://github.com/latte-soft/maui/releases). We *also* provide the plugin on Roblox's Developer Marketplace for ~250 Robux, if you want to support us, or just want automatic updates. With a self/pre-built version of the plugin, you're responsible for keeping it up-to-date in your plugins folder.
+The plugin, and **all** of its source code, will **always** be 100% free (as-in freedom) & open source, under the MIT License. You can download & build from source on the [GitHub repository](https://github.com/latte-soft/maui) (if you're worried about security or whatnot), or install a pre-built version directly from the [releases page](https://github.com/latte-soft/maui/releases). We *also* provide the plugin on Roblox's Developer Marketplace for ~250 Robux, if you want to support us, or just want automatic updates. With a self/pre-built version of the plugin, you're responsible for keeping it up-to-date in your plugins folder.
 
 ___
 
@@ -251,10 +251,30 @@ ___
 
 ## License
 
-This project, and all related files/documents, are licensed under the **GNU Lesser General Public License Version 3 (LGPLv3)**. You should have recieved a copy of [`LICENSE.txt`](LICENSE.txt) in this program, and you can visit here for more information: <https://www.gnu.org/licenses/lgpl-3.0.txt>
+This project, and all related files/documents, are licensed under the **MIT License**. You should have recieved a copy of [`LICENSE.txt`](LICENSE.txt) in this program. If not:
 
 ```txt
+MIT License
+
 Maui | Copyright (c) 2022-2023 Latte Softworks <latte.to>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
 *README social link icons by [@csqrl](https://github.com/csqrl)*

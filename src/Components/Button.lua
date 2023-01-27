@@ -1,6 +1,6 @@
 --[[
     Maui - Roblox Studio Plugin for Packing Modules as Executable Luau Scripts
-    Licensed Under the LGPLv3 | Copyright (c) 2022-2023 Latte Softworks <latte.to>
+    Licensed Under the MIT License | Copyright (c) 2022-2023 Latte Softworks <latte.to>
     https://github.com/latte-soft/maui
 
     File: /src/Components/Button.lua
