@@ -314,10 +314,6 @@ return function(plugin, pluginWidget)
                 )
             end
 
-            pcall(function()
-                ScriptObject.Source = INITIAL_OUTPUT_TEXT
-            end)
-
             ScriptObject.Parent = Directory
             Selection:Set({ScriptObject}) -- Select the script object for the "Save" button feature
             ScriptEditorService:OpenScriptDocumentAsync(ScriptObject)
@@ -332,6 +328,10 @@ return function(plugin, pluginWidget)
                 -- Yes, this is VERY HACKY, but we have to do this instead due to `Script.Source`'s internal
                 -- __newindex set limit. We have to escape all "invalid" unicode from strings in the script,
                 -- or `ScriptDocument:EditTextAsync` will error with a cryptic message to the user
+                pcall(function()
+                    ScriptObject.Source = INITIAL_OUTPUT_TEXT
+                end)
+
                 local EscapedScript = EscapeUnicode(GeneratedScriptOrError)
 
                 local ScriptDocument = ScriptEditorService:FindScriptDocument(ScriptObject)
