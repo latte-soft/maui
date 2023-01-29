@@ -39,7 +39,7 @@ return function(props)
 
     return New "Frame" {
         Name = "Console",
-        
+
         AnchorPoint = props.AnchorPoint or Vector2.new(0, 0),
         Position = props.Position or UDim2.fromOffset(0, 0),
         Size = props.Size or UDim2.fromOffset(300, 200),
@@ -80,7 +80,7 @@ return function(props)
                 Size = UDim2.new(1, 0, 1, -25), -- 1 pixel less so the X scrollbar doesnt overlap border
 
                 BackgroundTransparency = 1,
-        
+
                 AutomaticCanvasSize = Enum.AutomaticSize.XY,
                 ScrollingDirection = Enum.ScrollingDirection.XY,
                 CanvasSize = UDim2.fromScale(0, 0),
@@ -92,17 +92,17 @@ return function(props)
                 TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
                 MidImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
                 BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
-        
+
                 -- Keep track of for auto scroll
                 CanvasPosition = CanvasPosition,
                 [Out "CanvasPosition"] = CanvasPosition,
-        
+
                 [OnChange "AbsoluteCanvasSize"] = if not props.AutoScrollEnabled then Fusion.doNothing else function(newCanvasSize)
                     if props.AutoScrollEnabled:get() then
                         CanvasPosition:set(Vector2.new(CanvasPosition:get().X, newCanvasSize.Y))
                     end
                 end,
-        
+
                 -- Check if there's a context menu to run on right click end
                 [OnEvent "InputEnded"] = if not props.RightClickContextMenu then Fusion.doNothing else function(inputObject)
                     if inputObject.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -110,27 +110,27 @@ return function(props)
                         props.RightClickContextMenu:ShowAsync()
                     end
                 end,
-        
+
                 [Children] = {
                     New "TextLabel" {
                         Name = "ConsoleText",
-        
+
                         AutomaticSize = Enum.AutomaticSize.XY,
                         Size = UDim2.fromScale(1, 0),
-        
+
                         BackgroundTransparency = 1,
-        
+
                         Text = props.Text,
                         Font = Enum.Font.Code,
                         LineHeight = 1.1,
                         TextColor3 = StudioTheme:GetColor("SubText"),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         TextYAlignment = Enum.TextYAlignment.Top,
-        
+
                         [Children] = {
                             New "UIPadding" {
                                 PaddingLeft = UDim.new(0, 8),
-                                PaddingRight = UDim.new(0, 8),
+                                PaddingRight = UDim.new(0, -8),
                                 PaddingTop = UDim.new(0, 6),
                                 PaddingBottom = UDim.new(0, 6),
                             }

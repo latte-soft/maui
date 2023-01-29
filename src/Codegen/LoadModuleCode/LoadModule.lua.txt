@@ -1,9 +1,15 @@
 do
     local Version = "${Version}"
+    local FlagIndex = Flags or {}
 
-    local RunService = game:GetService("RunService")
-    local IsServer = RunService:IsServer()
-    local IsClient = RunService:IsClient()
+    local CheckContext = (FlagIndex.ContextualExecution == nil and true) or FlagIndex.ContextualExecution
+    local IsServer, IsClient do
+        if CheckContext then
+            local RunService = game:GetService("RunService")
+            IsServer = RunService:IsServer()
+            IsClient = RunService:IsClient()
+        end
+    end
 
     local RealEnvironment = getfenv(0)
 
@@ -157,18 +163,20 @@ do
         local ClosureCoroutine = coroutine.wrap(Closure)
 
         if scriptObject:IsA("BaseScript") then
-            local ClosureThread = not scriptObject.Disabled and task.defer(ClosureCoroutine)
+            local ClosureThread = (not CheckContext or not scriptObject.Disabled) and task.defer(ClosureCoroutine)
 
-            local DisabledChangedConnection
-            DisabledChangedConnection = scriptObject:GetPropertyChangedSignal("Disabled"):Connect(function(newDisabledState)
-                DisabledChangedConnection:Disconnect()
+            if CheckContext then
+                local DisabledChangedConnection
+                DisabledChangedConnection = scriptObject:GetPropertyChangedSignal("Disabled"):Connect(function(newDisabledState)
+                    DisabledChangedConnection:Disconnect()
 
-                if newDisabledState == false then
-                    LoadScript(scriptObject)
-                else
-                    pcall(task.cancel, ClosureThread)
-                end
-            end)
+                    if newDisabledState == false then
+                        LoadScript(scriptObject)
+                    else
+                        pcall(task.cancel, ClosureThread)
+                    end
+                end)
+            end
 
             return
         else
@@ -185,8 +193,23 @@ do
     end
 
     for _, ScriptObject in next, ScriptsToRun do
-        if (IsServer and ScriptObject.ClassName == "Script") or (IsClient and ScriptObject.ClassName == "LocalScript") then
+        if not CheckContext or ((IsServer and ScriptObject.ClassName == "Script") or (IsClient and ScriptObject.ClassName == "LocalScript")) then
             LoadScript(ScriptObject)
+        end
+    end
+
+    if FlagIndex.ReturnMainModule == nil or FlagIndex.ReturnMainModule then
+        local MainModule do
+            for _, Object in next, RealObjectRoot do
+                if Object.ClassName == "ModuleScript" and Object.Name == "MainModule" then
+                    MainModule = Object
+                    break
+                end
+            end
+        end
+
+        if MainModule then
+            return LoadScript(MainModule)
         end
     end
 end

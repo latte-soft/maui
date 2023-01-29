@@ -143,7 +143,7 @@ After the script is built, Maui should open the output script's editor window, a
 
 From there, you're done! You can run it in a script utility, another script, place it into obfuscation, etc.. It's 100% portable, and will work in almost *any* Roblox environment!
 
-Remember, because it **literally** packs a Roblox model, you need to have at least 1 `LocalScript` (client context) or `Script` (server context) to actually initialize what you want. You can't *really* interract with Maui's script environment outside of the codegen, you need to do everything internally in the packed script. (for added security you can't, we may add something like this later on)
+Remember, because it **literally** packs a Roblox model, you need to have at least 1 `LocalScript` (client context) or `Script` (server context) to actually initialize what you want. You *can* configure this to ignore context like `Script.Disabled` or running a script in the wrong context in the [project format](#the-maui-project-format). By default, if you provide a `MainModule`, Maui will return the value from it with the exact same behavior as requiring a module by ID on Roblox.
 
 ##### *This is a simple test-script for using Fusion with an exploit, you can see the source [here](tests/HelloFusion), and example output [here](examples/MauiFusionDemo_2023-01-06_13-24-23.lua)*
 
@@ -201,13 +201,18 @@ return {
 
     -- All output options
     Output = {
-        -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename, like so:
-        -- "return game:GetService("ServerStorage").SomeFolder"
-        Directory = "return script.Parent",
+        Directory = "return script.Parent", -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename
         ScriptName = "MauiGeneratedScript", -- The actual name of the output script object, e.g. "SomeScript"
+        ScriptType = "LocalScript", -- Accepts "LocalScript", "Script", and "ModuleScript"
 
         MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
+    },
+
+    -- "Fast-Flags" to be respected at runtime
+    Flags = {
+        ContextualExecution = true, -- If client/server context should be checked at runtime, and ignores LuaSourceContainer.Disabled (e.g. LocalScripts only run on the client, Scripts only run on the server)
+        ReturnMainModule = true -- **If applicable**, return the contents of a "MainModule"-named ModuleScript from the root of the model. This behaves exactly like Roblox's MainModule system
     },
 
     -- Property wl/bl overrides
@@ -227,9 +232,15 @@ You can *also* use [Rojo's JSON module feature](https://rojo.space/docs/v7/sync-
     "Output": {
         "Directory": "return script.Parent",
         "ScriptName": "MauiGeneratedScript",
+        "ScriptType": "LocalScript",
 
         "MinifyTable": false,
         "UseMinifiedLoader": true
+    },
+
+    "Flags": {
+        "ContextualExecution": true,
+        "ReturnMainModule": true
     },
 
     "Properties": {

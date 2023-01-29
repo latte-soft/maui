@@ -1,0 +1,13 @@
+{
+    "FormatVersion": 1,
+
+    "Output": {
+        "Directory": "return script.Parent.Parent",
+        "ScriptName": "MainModulePacked",
+        "ScriptType": "ModuleScript"
+    },
+
+    "Flags": {
+        "ReturnMainModule": true
+    }
+}

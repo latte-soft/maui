@@ -30,13 +30,18 @@ local DEFAULT_OPTIONS = {
 
     -- All output options
     Output = {
-        -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename, like so:
-        -- "return game:GetService("ServerStorage").SomeFolder"
-        Directory = Nil,
+        Directory = Nil, -- A string/function/instance (supports all) denoting/returning a specific output path in the DataModel, and a string of the filename
         ScriptName = Nil, -- The actual name of the output script object, e.g. "SomeScript"
+        ScriptType = "LocalScript", -- Accepts "LocalScript", "Script", and "ModuleScript"
 
         MinifyTable = false, -- If the codegen table itself (made from LuaEncode) is to be minified
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
+    },
+
+    -- "Fast-Flags" to be respected at runtime
+    Flags = {
+        ContextualExecution = true, -- If client/server context should be checked at runtime, and ignores LuaSourceContainer.Disabled (e.g. LocalScripts only run on the client, Scripts only run on the server)
+        ReturnMainModule = true -- **If applicable**, return the contents of a "MainModule"-named ModuleScript from the root of the model. This behaves exactly like Roblox's MainModule system
     },
 
     -- Property wl/bl overrides
@@ -86,6 +91,35 @@ local EscapeUnicode do
     end
 end
 
+-- To give a closure a script global of choice
+local function GiveClosureScriptGlobal(closureToSet, scriptGlobal)
+    local RealEnvironment = getfenv(0)
+    local GlobalEnvironmentOverride = {
+        ["script"] = scriptGlobal
+    }
+
+    -- Took this from the codegen's handler, works perfectly
+    local VirtualEnvironment
+    VirtualEnvironment = setmetatable({}, {
+        __index = function(_, index)
+            local IndexInVirtualEnvironment = rawget(VirtualEnvironment, index)
+            if IndexInVirtualEnvironment ~= nil then
+                return IndexInVirtualEnvironment
+            end
+
+            local IndexInGlobalEnvironmentOverride = GlobalEnvironmentOverride[index]
+            if IndexInGlobalEnvironmentOverride ~= nil then
+                return IndexInGlobalEnvironmentOverride
+            end
+
+            return RealEnvironment[index]
+        end
+    })
+
+    setfenv(closureToSet, VirtualEnvironment)
+    return closureToSet
+end
+
 return function(plugin, pluginWidget)
     -- We need to pass through the plugin object here
     local PluginSettings = require(Root.PluginSettings)(plugin)
@@ -112,24 +146,44 @@ return function(plugin, pluginWidget)
         end
 
         -- Get default options, and if there's a `.maui` project file, use those
-        local Options, MauiProjectFileModule = DeepClone(DEFAULT_OPTIONS), FirstObjectSelected:FindFirstChild(".maui") do
-            if MauiProjectFileModule then
-                -- Try to read and parse project format
-                local MauiProjectFile = require(MauiProjectFileModule)
-                if type(MauiProjectFile) ~= "table" then
-                    Log("`.maui` project file given isn't a valid Lua/JSON module, failed to parse.")
-                    return
-                end
+        local Options = DeepClone(DEFAULT_OPTIONS)
+        local MauiProjectFileModule = FirstObjectSelected:FindFirstChild(".maui")
 
-                if MauiProjectFile["FormatVersion"] and MauiProjectFile.FormatVersion ~= 1 then
-                    Log("Invalid format version in `.maui` project file; expected 1, got " .. tostring(MauiProjectFile.FormatVersion))
-                    return
-                end
-
+        if MauiProjectFileModule then
+            local ApplyOptionsSuccess, ApplyOptionsErrorMessage = pcall(function()
                 Log("Reading `.maui` project file..")
 
+                -- Try to read and parse project format; we're using `loadstring()` because of `require()` caching..
+                local MauiProjectFileClosure, MauiProjectFileCompileError = loadstring(MauiProjectFileModule.Source)
+
+                if MauiProjectFileClosure == nil and MauiProjectFileCompileError then
+                    error("Error compiling project file: " .. MauiProjectFileCompileError, 0)
+                end
+
+                GiveClosureScriptGlobal(MauiProjectFileClosure, MauiProjectFileModule)
+                local MauiProjectFile = MauiProjectFileClosure()
+
+                if type(MauiProjectFile) ~= "table" then
+                    error("`.maui` project file given isn't a valid Lua/JSON module, failed to parse.", 0)
+                end
+
+                -- All output options that could be specified
+                local FormatVersion = MauiProjectFile["FormatVersion"]
+                local Output = MauiProjectFile["Output"]
+                local Flags = MauiProjectFile["Flags"]
+                local Properties = MauiProjectFile["Properties"]
+
+                if FormatVersion ~= nil and FormatVersion ~= 1 then
+                    error("Invalid format version in `.maui` project file; expected 1, got " .. tostring(MauiProjectFile.FormatVersion, 0))
+                end
+
                 -- Replace all eligable options for output
-                if MauiProjectFile["Output"] then
+                if Output ~= nil then
+                    local OutputType = type(Output)
+                    if OutputType ~= "table" then
+                        error("Invalid DataType for `Output` in project file; expected \"table\", got \"" .. OutputType .. "\"", 0)
+                    end
+
                     local function RecursiveAddOptions(realTable, outputOptions)
                         for Key, NewValue in outputOptions do
                             if realTable[Key] ~= nil then -- Then it's in the real default options, we can add
@@ -141,7 +195,7 @@ return function(plugin, pluginWidget)
 
                                 realTable[Key] = NewValue
                             else
-                                Log("Invalid output option \"" .. tostring(Key) .. "\" in project file, did you make a typo?", 2)
+                                error("Invalid output option \"" .. tostring(Key) .. "\" in project file, did you make a typo?", 0)
                             end
                         end
                     end
@@ -149,14 +203,35 @@ return function(plugin, pluginWidget)
                     RecursiveAddOptions(Options.Output, MauiProjectFile.Output)
                 end
 
-                -- Handle custom property overwrites
-                if MauiProjectFile["Properties"] then
-                    local PropertyOptions = MauiProjectFile["Properties"]
+                if Flags ~= nil then
+                    local FlagsType = type(Flags)
+                    if FlagsType ~= "table" then
+                        error("Invalid DataType for `Flags` in project file; expected \"table\", got \"" .. FlagsType .. "\"", 0)
+                    end
 
-                    local Whitelist = PropertyOptions["Whitelist"]
-                    local Blacklist = PropertyOptions["Blacklist"]
+                    local RealFlags = Options.Flags
 
-                    if Whitelist then
+                    -- It's only to be 1 stack of values, so only 1 shallow loop
+                    for Key, NewValue in Flags do
+                        if type(NewValue) == "table" then
+                            error("No nested tables are allowed for `Flags` in the project file, can't set \"" .. tostring(Key) .. "\"", 0)
+                        else
+                            RealFlags[Key] = NewValue
+                        end
+                    end
+                end
+
+                -- Handle custom property overrides
+                if Properties ~= nil then
+                    local PropertiesType = type(Properties)
+                    if PropertiesType ~= "table" then
+                        error("Invalid DataType for `Properties` in project file; expected \"table\", got \"" .. PropertiesType .. "\"", 0)
+                    end
+
+                    local Whitelist = Properties["Whitelist"]
+                    local Blacklist = Properties["Blacklist"]
+
+                    if type(Whitelist) == "table" then
                         local RealWhitelist = Options.Properties.Whitelist
 
                         for ClassName, ClassProperties in Whitelist do
@@ -164,7 +239,7 @@ return function(plugin, pluginWidget)
                         end
                     end
 
-                    if Blacklist then
+                    if type(Blacklist) == "table" then
                         local RealBlacklist = Options.Properties.Blacklist
 
                         for ClassName, ClassProperties in Blacklist do
@@ -172,6 +247,11 @@ return function(plugin, pluginWidget)
                         end
                     end
                 end
+            end)
+
+            if not ApplyOptionsSuccess and ApplyOptionsErrorMessage then
+                Log("Error applying options from project file: \"" .. ApplyOptionsErrorMessage .. "\"")
+                return
             end
         end
 
@@ -231,38 +311,12 @@ return function(plugin, pluginWidget)
                 -- We're expecting strings of this option to be literal Lua code that returns the path to use
                 local DirectoryReturnClosure, ErrorMessage = loadstring(DirectoryInOptions)
 
-                if not DirectoryReturnClosure then
-                    Log("Expected valid Lua code for `Options.Output.Directory` (since a string was provided), but there was an error in loadstring: \"" .. tostring(ErrorMessage) .. "\"", 2)
+                if not DirectoryReturnClosure and ErrorMessage then
+                    Log("Expected valid Lua code for `Options.Output.Directory` (since a string was provided), but there was an error in loadstring: \"" .. ErrorMessage .. "\"", 2)
                     return
                 end
 
-                -- We'll give the closure it's own `script` global so it can reference relative to itself
-                do
-                    local RealEnvironment = getfenv(0)
-                    local GlobalEnvironmentOverride = {
-                        ["script"] = MauiProjectFileModule
-                    }
-
-                    -- Took this from the codegen's handler, works perfectly
-                    local VirtualEnvironment
-                    VirtualEnvironment = setmetatable({}, {
-                        __index = function(_, index)
-                            local IndexInVirtualEnvironment = rawget(VirtualEnvironment, index)
-                            if IndexInVirtualEnvironment ~= nil then
-                                return IndexInVirtualEnvironment
-                            end
-
-                            local IndexInGlobalEnvironmentOverride = GlobalEnvironmentOverride[index]
-                            if IndexInGlobalEnvironmentOverride ~= nil then
-                                return IndexInGlobalEnvironmentOverride
-                            end
-
-                            return RealEnvironment[index]
-                        end
-                    })
-
-                    setfenv(DirectoryReturnClosure, VirtualEnvironment)
-                end
+                GiveClosureScriptGlobal(DirectoryReturnClosure, MauiProjectFileModule)
 
                 Directory = GetDirectoryFromFunction(DirectoryReturnClosure)
                 if not Directory then
@@ -299,13 +353,21 @@ return function(plugin, pluginWidget)
         -- doesn't just yield and set it when they click "Allow", we have to do it again outselves
         -- ALSO, setting this property can err if the str is too long (yay!)
         local CreateScriptOk, ErrorMessage = pcall(function()
+            local ScriptType = Options.Output.ScriptType
+
+            -- Check Options.ScriptType first
+            if not table.find({"LocalScript", "Script", "ModuleScript"}, ScriptType) then
+                Log("Invalid ScriptType for `Options.ScriptType` in project file; expected LocalScript/Script/ModuleScript, got: \"" .. ScriptType .. "\"", 3)
+                return
+            end
+
             -- Create/find the real script obj
             local ScriptObject
             if UsingCustomScriptName then
-                ScriptObject = Directory:FindFirstChild(ScriptName) or Instance.new("Script")
+                ScriptObject = Directory:FindFirstChild(ScriptName) or Instance.new(ScriptType)
                 ScriptObject.Name = ScriptName
             else
-                ScriptObject = Instance.new("Script")
+                ScriptObject = Instance.new(ScriptType)
 
                 -- Format the current date-time into the name, just for basic organization for
                 -- the user. I'd make it just the epoch time, but just doing this for readability
@@ -316,15 +378,17 @@ return function(plugin, pluginWidget)
 
             ScriptObject.Parent = Directory
             Selection:Set({ScriptObject}) -- Select the script object for the "Save" button feature
-            ScriptEditorService:OpenScriptDocumentAsync(ScriptObject)
 
-            Log("Opened from location \"" .. ScriptObject:GetFullName() .. "\", adding output..", 2)
+            Log("Adding output..", 2)
 
             -- Setting LuaSourceContainer.Source with 200k chars or more gives us an error, if it isn't,
             -- we'll use our other method
             if #GeneratedScriptOrError < 200000 then
                 ScriptObject.Source = GeneratedScriptOrError
+                ScriptEditorService:OpenScriptDocumentAsync(ScriptObject)
             else
+                Log("Output too large to set `LuaSourceContainer.Source` directly with, using EditTextAsync method..", 2)
+
                 -- Yes, this is VERY HACKY, but we have to do this instead due to `Script.Source`'s internal
                 -- __newindex set limit. We have to escape all "invalid" unicode from strings in the script,
                 -- or `ScriptDocument:EditTextAsync` will error with a cryptic message to the user
@@ -332,17 +396,18 @@ return function(plugin, pluginWidget)
                     ScriptObject.Source = INITIAL_OUTPUT_TEXT
                 end)
 
-                local EscapedScript = EscapeUnicode(GeneratedScriptOrError)
-
+                ScriptEditorService:OpenScriptDocumentAsync(ScriptObject)
                 local ScriptDocument = ScriptEditorService:FindScriptDocument(ScriptObject)
                 if not ScriptDocument then
                     error("Failed to get the open `ScriptDocument` object to edit source, was the script disallowed from opening?", 0)
                 end
 
+                local EscapedScript = EscapeUnicode(GeneratedScriptOrError)
+
                 local DidEdit, EditTextErrorMessage = ScriptDocument:EditTextAsync(EscapedScript, 1, 1, 1, #EscapedScript)
 
                 if DidEdit then
-                    Log("Added full output to script", 2)
+                    Log("Added full output to script from EditTextAsync", 3)
                 elseif EditTextErrorMessage then
                     error("`ScriptDocument:EditTextAsync` error: " .. EditTextErrorMessage, 0)
                 end

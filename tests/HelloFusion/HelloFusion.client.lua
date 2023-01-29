@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 -- Maui demo using Fusion with an exploit env
 
 local CoreGui = game:GetService("CoreGui")
