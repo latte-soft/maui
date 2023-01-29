@@ -6,6 +6,33 @@
 
 [hr][/align]
 
+[size=x-large][b]⚠️ Update 0.4.0![/b][/size]
+[list]
+[*] Added [font=Courier New]Output.ScriptType[/font], which denotes the "type" of script that outputs in Studio. (LocalScript/Script/ModuleScript)
+
+[*] Added "Fast-Flags" to the project file ([font=Courier New]Flags[/font]); they're specifc options for Maui's codegen to check and respect at runtime.
+
+[*] Added [font=Courier New]Flags.ContextualExecution[/font]; which denotes if client/server context should be checked at runtime. (Only running [font=Courier New]LocalScripts[/font] on the client, only running [font=Courier New]Scripts[/font] on the server etc) It also decides the behavior of respecting [font=Courier New]LuaSourceContainer.Disabled[/font], and will run scripts anyway if this option is set to false.
+
+[*] Added [font=Courier New]Flags.ReturnMainModule[/font]; (When applicable), return the contents of a "MainModule"-named [font=Courier New]ModuleScript[/font] from the root of the model. This behaves exactly like Roblox's "MainModule" system, like if you were requiring a module by its' ID.
+[*] Fixed a (very recent) issue with the [font=Courier New]ScriptDocument:EditTextAsync[/font] method of placing script output into the editor when it's over 200k characters; a recent Roblox API change broke how we handled the output.
+
+[*] Fixed the [font=Courier New]script[/font] global in the project file not being set to itself. (for literal instance returns)
+
+[*] Overall improvements around the codebase, fixed some issues when internally handling the project file format.
+[/list]
+
+[hr]
+
+[size=x-large][b]Ok.. So What [i]is[/i] Maui?[/b][/size]
+Put short, Maui is the full idea of Roblox model/object serialization [b]and[/b] script packing put together. This allows script developers to use any of the tooling or libraries they wish! You could use a workflow with [url=https://code.visualstudio.com/]VSCode[/url], [url=https://github.com/LPGhatguy/aftman]Aftman[/url], [url=https://rojo.space]Rojo[/url], [url=https://wally.run]Wally[/url], [url=https://roblox-ts.com]Roblox-TS[/url], [url=https://github.com/Roblox/tarmac]Tarmac[/url], [url=https://darklua.com]Darklua[/url], etc.. Or just good ol' Roblox Studio! If it's built down to a Roblox model, you can build it into a script with Maui.
+
+It's very general purpose, and will pack almost any model you throw at it. Any class, any property, any attribute, and [i]any[/i] Lua DataType. As long as it's configured properly in the API dump and is a Lua-accessable DataType, it'll build!
+
+Maui is built with [url=https://github.com/regginator/LuaEncode]LuaEncode[/url], another general-purpose project of mine that was a direct component of this. It will handle [b]any[/b] Lua/Roblox-Lua DataType, and even supports vanilla Lua 5.1! If it weren't for making LuaEncode, Maui wouldn't be possible.
+
+[hr]
+
 [size=x-small][i]You can skip reading this if you want to..[/i][/size]
 [size=x-large][b]Preface[/b][/size]
 Ever since the very simple beginnings of script development on this platform, we've all followed a fairly similar, basic way of writing and distributing scripts as a whole. We've had minor changes over the years with things like more complex obfuscation and auth systems, but for the most part, it's still quite the same overall; write everything in one script, and distribute. For tools/libraries made by script devs, this often isn't very organized, or [i]secure[/i] for that matter.
@@ -24,13 +51,6 @@ The plugin, and [b]all[/b] of its source code, will [b]always[/b] be 100% free (
 
 [hr]
 
-[size=x-large][b]Ok.. So What [i]is[/i] Maui?[/b][/size]
-Put short, Maui is the full idea of Roblox model/object serialization [b]and[/b] script packing put together. This allows script developers to use any of the tooling or libraries they wish! You could use a workflow with [url=https://code.visualstudio.com/]VSCode[/url], [url=https://github.com/LPGhatguy/aftman]Aftman[/url], [url=https://rojo.space]Rojo[/url], [url=https://wally.run]Wally[/url], [url=https://roblox-ts.com]Roblox-TS[/url], [url=https://github.com/Roblox/tarmac]Tarmac[/url], [url=https://darklua.com]Darklua[/url], etc.. Or just good ol' Roblox Studio! If it's built down to a Roblox model, you can build it into a script with Maui.
-
-It's very general purpose, and will pack almost any model you throw at it. Any class, any property, any attribute, and [i]any[/i] Lua DataType. As long as it's configured properly in the API dump and is a Lua-accessable DataType, it'll build!
-
-Maui is built with [url=https://github.com/regginator/LuaEncode]LuaEncode[/url], another general-purpose project of mine that was a direct component of this. It will handle [b]any[/b] Lua/Roblox-Lua DataType, and even supports vanilla Lua 5.1! If it weren't for making LuaEncode, Maui wouldn't be possible.
-
 [size=x-large][b]Why the Name?[/b][/size]
 The name of this project was originally going to be "Eclipse", however, it turned out to be a [i]very[/i] generic and overused name, used by multiple other Lua (Roblox) projects. ("Lua" means "Moon", yeah..) [url=https://luau-lang.org]Roblox's built-in scripting language[/url] is named "Luau", which is a type of [url=https://en.wikipedia.org/wiki/L%C5%AB%CA%BBau]traditional party/feast[/url] in Hawaiian culture. [url=https://en.wikipedia.org/wiki/Mau]"Maui"[/url] is one of the largest islands in Hawaii, with [url=https://mauiluau.com]Luau parties throughout the year[/url]. Hence, a non-generic name!
 
@@ -44,7 +64,7 @@ From there, just "Install" the plugin in Studio from Roblox!
 [/spoiler]
 
 [spoiler="Installation via GitHub Releases"]
-Goto the [url=https://github.com/latte-soft/maui/releases/lastest]latest release[/url] on the GitHub repository, and download whichever file suites best. ([font=Courier]*.rbxm[/font] is faster to load, and [font=Courier]*.rbxmx[/font] is more readable.)
+Goto the [url=https://github.com/latte-soft/maui/releases/lastest]latest release[/url] on the GitHub repository, and download whichever file suites best. ([font=Courier New]*.rbxm[/font] is faster to load, and [font=Courier New]*.rbxmx[/font] is more readable.)
 
 Do note, pre-built versions of Maui are always minified with [url=https://darklua.com]Darklua[/url], a Lua formatter. It is [b]not[/b] obfuscation, just minification.
 
@@ -76,16 +96,16 @@ After the script is built, Maui should open the output script's editor window, a
 
 From there, you're done! You can run it in a script utility, another script, place it into obfuscation, etc.. It's 100% portable, and will work in almost [i]any[/i] Roblox environment!
 
-Remember, because it [b]literally[/b] packs a Roblox model, you need to have at least 1 [font=Courier]LocalScript[/font] (client context) or [font=Courier]Script[/font] (server context) to actually initialize what you want. You [i]can[/i] configure this to ignore context like [font=Courier]Script.Disabled[/font] or running a script in the wrong context in the [url=https://github.com/latte-soft/maui#the-maui-project-format]project format[/url]. By default, if you provide a [font=Courier]MainModule[/font], Maui will return the value from it with the exact same behavior as requiring a module by ID on Roblox.
+Remember, because it [b]literally[/b] packs a Roblox model, you need to have at least 1 [font=Courier New]LocalScript[/font] (client context) or [font=Courier New]Script[/font] (server context) to actually initialize what you want. You [i]can[/i] configure this to ignore context like [font=Courier New]Script.Disabled[/font] or running a script in the wrong context in the [url=https://github.com/latte-soft/maui#the-maui-project-format]project format[/url]. By default, if you provide a [font=Courier New]MainModule[/font], Maui will return the value from it with the exact same behavior as requiring a module by ID on Roblox.
 
 [size=small][i]This is a simple test-script for using Fusion with an exploit, you can see the source [url=https://github.com/latte-soft/maui/blob/main/tests/HelloFusion]here[/url]![/i][/size]
 [img=775x372]https://media.discordapp.net/attachments/1060751075415687178/1060976562654154772/image.png?width=950&height=456[/img]
 
 [hr]
 
-[size=x-large][b]The [font=Courier].maui[/font] Script Global[/b][/size]
+[size=x-large][b]The [font=Courier New].maui[/font] Script Global[/b][/size]
 
-In all Maui script closures, a "[font=Courier]maui[/font]" global is pushed into the environment. You could use it in a script like so:
+In all Maui script closures, a "[font=Courier New]maui[/font]" global is pushed into the environment. You could use it in a script like so:
 
 [code]if maui then -- Then the script is running under Maui's environment!
     print(maui.Version)
@@ -96,26 +116,26 @@ Here's the [i]current[/i] API reference:
 [list]
 [*] [size=large][b]Get Version[/b][/size]
 
-  [font=Courier]<string> maui.Version[/font]
+  [font=Courier New]<string> maui.Version[/font]
 
   Returns a constant of the version of Maui the script was built with.
 
 [*] [size=large][b]Get Real Script Object[/b][/size]
 
-  [font=Courier]<Instance: LuaSourceContainer> maui.GetScript(<void>)[/font]
+  [font=Courier New]<Instance: LuaSourceContainer> maui.GetScript(<void>)[/font]
 
   Returns the REAL script global from the closure that's currently running.
 
 [*] [size=large][b]Get Shared Environment Table[/b][/size]
 
-  [font=Courier]<table> maui.GetShared(<void>)[/font]
+  [font=Courier New]<table> maui.GetShared(<void>)[/font]
 
   Returns a "shared" table for ALL closures in a Maui-generated script, so you don't need to the real `_G` or `shared`.
 [/list]
 
 [hr]
 
-[size=x-large][b]The "[font=Courier].maui[/font]" Project Format[/b][/size]
+[size=x-large][b]The "[font=Courier New].maui[/font]" Project Format[/b][/size]
 [size=small][i]This is really meant for more advanced projects/modules you're packing, and right now there really isn't much outside of minification options.[/i][/size]
 
 You can place a module named ".maui" under the model you're building, and Maui will expect the return to be a table of options. Here's a Lua template for this:
@@ -189,5 +209,5 @@ If you still have further questions or want to look at the project for more info
 
 [align=center][color=#ff6b6b][size=xx-large]<3[/size][/color][/align]
 
-[align=center][size=x-small]and yes, I [url=https://github.com/latte-soft/maui/blob/main/THREAD.bb]manually wrote this thread in pure bbcode[/url], pls save me[/font][/color][/size]
+[align=center][size=x-small]and yes, I [url=https://github.com/latte-soft/maui/blob/main/THREAD.bbcode]manually wrote this thread in pure bbcode[/url], pls save me[/font][/color][/size]
 [spoiler="maui ballin"][img]https://media.discordapp.net/attachments/1060751075415687178/1060773297370955788/maui-ballin.gif[/img][/spoiler][/align]

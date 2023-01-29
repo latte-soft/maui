@@ -1,7 +1,7 @@
 [package]
 name = "latte-soft/maui"
 description = "Roblox Studio Plugin for Packing Modules as Executable Luau Scripts"
-version = "0.3.2"
+version = "0.4.0"
 license = "MIT"
 authors = [
     "Latte Softworks <latte.to>",
