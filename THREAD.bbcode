@@ -10,7 +10,7 @@
 [list]
 [*] Added [font=Courier New]Output.ScriptType[/font], which denotes the "type" of script that outputs in Studio. (LocalScript/Script/ModuleScript)
 
-[*] Added "Fast-Flags" to the project file ([font=Courier New]Flags[/font]); they're specifc options for Maui's codegen to check and respect at runtime.
+[*] Added "Flags" to the project file ([font=Courier New]Flags[/font]); they're specifc options for Maui's codegen to check and respect at runtime.
 
 [*] Added [font=Courier New]Flags.ContextualExecution[/font]; which denotes if client/server context should be checked at runtime. (Only running [font=Courier New]LocalScripts[/font] on the client, only running [font=Courier New]Scripts[/font] on the server etc) It also decides the behavior of respecting [font=Courier New]LuaSourceContainer.Disabled[/font], and will run scripts anyway if this option is set to false.
 
@@ -153,7 +153,7 @@ You can place a module named ".maui" under the model you're building, and Maui w
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
     },
 
-    -- "Fast-Flags" to be respected at runtime
+    -- "Flags" to be respected at runtime
     Flags = {
         ContextualExecution = true, -- If client/server context should be checked at runtime, and ignores LuaSourceContainer.Disabled (e.g. LocalScripts only run on the client, Scripts only run on the server)
         ReturnMainModule = true -- **If applicable**, return the contents of a "MainModule"-named ModuleScript from the root of the model. This behaves exactly like Roblox's MainModule system

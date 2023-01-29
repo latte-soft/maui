@@ -38,7 +38,7 @@ local DEFAULT_OPTIONS = {
         UseMinifiedLoader = true -- Use the pre-minified LoadModule script in the codegen, which is always predefined and not useful for debugging
     },
 
-    -- "Fast-Flags" to be respected at runtime
+    -- "Flags" to be respected at runtime
     Flags = {
         ContextualExecution = true, -- If client/server context should be checked at runtime, and ignores LuaSourceContainer.Disabled (e.g. LocalScripts only run on the client, Scripts only run on the server)
         ReturnMainModule = true -- **If applicable**, return the contents of a "MainModule"-named ModuleScript from the root of the model. This behaves exactly like Roblox's MainModule system

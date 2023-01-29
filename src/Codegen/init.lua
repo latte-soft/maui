@@ -36,7 +36,7 @@ ${SerializedFlags}${LoadModuleCode}]],
 local ModuleRoot=${SerializedModuleRoot}${SerializedFlags}${LoadModuleCode}]]
 }
 
--- Default fast-flags to check if the flags should be added or not
+-- Default flags to check if the flags should be added or not
 local DefaultFlags = {
     ContextualExecution = true,
     ReturnMainModule = true
