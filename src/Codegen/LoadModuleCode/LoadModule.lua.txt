@@ -116,7 +116,9 @@ do
                         if StackLevel == 0 then
                             return VirtualEnvironment
                         else
-                            local GetOk, FunctionEnvironment = pcall(getfenv, StackLevel + 1)
+                            StackLevel = StackLevel + 1
+
+                            local GetOk, FunctionEnvironment = pcall(getfenv, StackLevel)
                             if GetOk and FunctionEnvironment == RealEnvironment then
                                 return VirtualEnvironment
                             end
@@ -130,7 +132,9 @@ do
                         if StackLevel == 0 then
                             return setfenv(VirtualEnvironment, NewEnvironment)
                         else
-                            local GetOk, FunctionEnvironment = pcall(getfenv, StackLevel + 1)
+                            StackLevel = StackLevel + 1
+
+                            local GetOk, FunctionEnvironment = pcall(getfenv, StackLevel)
                             if GetOk and FunctionEnvironment == RealEnvironment then
                                 return setfenv(VirtualEnvironment, NewEnvironment)
                             end
