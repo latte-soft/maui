@@ -1,1 +1,1 @@
-print("test 2: " .. tostring(getfenv(0)) .. ", " .. tostring(getfenv(1)))
+print("test 2; getfenv(0): " .. tostring(getfenv(0)) .. ", getfenv(1): " .. tostring(getfenv(1)))
