@@ -6,24 +6,6 @@
 
 [hr][/align]
 
-[size=x-large][b]⚠️ Update 0.4.0![/b][/size]
-[list]
-[*] Added [font=Courier New]Output.ScriptType[/font], which denotes the "type" of script that outputs in Studio. (LocalScript/Script/ModuleScript)
-
-[*] Added "Flags" to the project file ([font=Courier New]Flags[/font]); they're specifc options for Maui's codegen to check and respect at runtime.
-
-[*] Added [font=Courier New]Flags.ContextualExecution[/font]; which denotes if client/server context should be checked at runtime. (Only running [font=Courier New]LocalScripts[/font] on the client, only running [font=Courier New]Scripts[/font] on the server etc) It also decides the behavior of respecting [font=Courier New]LuaSourceContainer.Disabled[/font], and will run scripts anyway if this option is set to false.
-
-[*] Added [font=Courier New]Flags.ReturnMainModule[/font]; (When applicable), return the contents of a "MainModule"-named [font=Courier New]ModuleScript[/font] from the root of the model. This behaves exactly like Roblox's "MainModule" system, like if you were requiring a module by its' ID.
-[*] Fixed a (very recent) issue with the [font=Courier New]ScriptDocument:EditTextAsync[/font] method of placing script output into the editor when it's over 200k characters; a recent Roblox API change broke how we handled the output.
-
-[*] Fixed the [font=Courier New]script[/font] global in the project file not being set to itself. (for literal instance returns)
-
-[*] Overall improvements around the codebase, fixed some issues when internally handling the project file format.
-[/list]
-
-[hr]
-
 [size=x-large][b]Ok.. So What [i]is[/i] Maui?[/b][/size]
 Put short, Maui is the full idea of Roblox model/object serialization [b]and[/b] script packing put together. This allows script developers to use any of the tooling or libraries they wish! You could use a workflow with [url=https://code.visualstudio.com/]VSCode[/url], [url=https://github.com/LPGhatguy/aftman]Aftman[/url], [url=https://rojo.space]Rojo[/url], [url=https://wally.run]Wally[/url], [url=https://roblox-ts.com]Roblox-TS[/url], [url=https://github.com/Roblox/tarmac]Tarmac[/url], [url=https://darklua.com]Darklua[/url], etc.. Or just good ol' Roblox Studio! If it's built down to a Roblox model, you can build it into a script with Maui.
 
