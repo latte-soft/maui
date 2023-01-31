@@ -11,8 +11,6 @@ do
         end
     end
 
-    local RealEnvironment = getfenv(0)
-
     local ReferenceBindings = {}
     local ReferencesToSet = {}
 
@@ -79,6 +77,10 @@ do
             table.insert(RealObjectRoot, CreateInstanceFromObject(ObjectTree))
         end
     end
+
+    local RealEnvironment = getfenv(0)
+
+    local script, unpack, table, require, type, pcall, getfenv, setfenv, setmetatable, rawget, coroutine, task = script, unpack, table, require, type, pcall, getfenv, setfenv, setmetatable, rawget, coroutine, task
 
     local function LoadScript(scriptObject)
         local StoredModuleValue = StoredModuleValues[scriptObject]
