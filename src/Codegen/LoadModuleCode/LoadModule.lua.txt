@@ -2,6 +2,14 @@ do
     local Version = "${Version}"
     local FlagIndex = Flags or {}
 
+    local script, next, unpack, table, require, type, pcall, getfenv, setfenv, setmetatable, rawget, coroutine, task, Instance = script, next, unpack, table, require, type, pcall, getfenv, setfenv, setmetatable, rawget, coroutine, task, Instance
+    local table_insert = table.insert
+    local table_freeze = table.freeze
+    local coroutine_wrap = coroutine.wrap
+    local task_defer = task.defer
+    local task_cancel = task.cancel
+    local Instance_new = Instance.new
+
     local CheckContext = (FlagIndex.ContextualExecution == nil and true) or FlagIndex.ContextualExecution
     local IsServer, IsClient do
         if CheckContext then
@@ -21,7 +29,7 @@ do
     local SharedEnvironment = {}
 
     local function CreateInstanceFromObject(objectTree)
-        local CreatedOk, CreatedInstance = pcall(Instance.new, objectTree.ClassName)
+        local CreatedOk, CreatedInstance = pcall(Instance_new, objectTree.ClassName)
         if not CreatedOk then
             return
         end
@@ -32,7 +40,7 @@ do
             ScriptClosures[CreatedInstance] = objectTree.Closure
 
             if CreatedInstance:IsA("BaseScript") then
-                table.insert(ScriptsToRun, CreatedInstance)
+                table_insert(ScriptsToRun, CreatedInstance)
             end
         end
 
@@ -46,7 +54,7 @@ do
 
         if objectTree["RefProperties"] then
             for Property, ReferenceId in next, objectTree.RefProperties do
-                table.insert(ReferencesToSet, {
+                table_insert(ReferencesToSet, {
                     InstanceObject = CreatedInstance,
                     Property = Property,
                     ReferenceId = ReferenceId
@@ -74,13 +82,11 @@ do
 
     local RealObjectRoot = {} do
         for _, ObjectTree in next, ModuleRoot do
-            table.insert(RealObjectRoot, CreateInstanceFromObject(ObjectTree))
+            table_insert(RealObjectRoot, CreateInstanceFromObject(ObjectTree))
         end
     end
 
     local RealEnvironment = getfenv(0)
-
-    local script, unpack, table, require, type, pcall, getfenv, setfenv, setmetatable, rawget, coroutine, task = script, unpack, table, require, type, pcall, getfenv, setfenv, setmetatable, rawget, coroutine, task
 
     local function LoadScript(scriptObject)
         local StoredModuleValue = StoredModuleValues[scriptObject]
@@ -96,8 +102,10 @@ do
         do
             local VirtualEnvironment
             local GlobalEnvironmentOverride = {
-                ["maui"] = table.freeze({
+                ["maui"] = table_freeze({
                     Version = Version,
+                    Script = script,
+                    Shared = SharedEnvironment,
                     GetScript = function()
                         return script
                     end,
@@ -166,10 +174,10 @@ do
             setfenv(Closure, VirtualEnvironment)
         end
 
-        local ClosureCoroutine = coroutine.wrap(Closure)
+        local ClosureCoroutine = coroutine_wrap(Closure)
 
         if scriptObject:IsA("BaseScript") then
-            local ClosureThread = (not CheckContext or not scriptObject.Disabled) and task.defer(ClosureCoroutine)
+            local ClosureThread = (not CheckContext or not scriptObject.Disabled) and task_defer(ClosureCoroutine)
 
             if CheckContext then
                 local DisabledChangedConnection
@@ -179,7 +187,7 @@ do
                     if newDisabledState == false then
                         LoadScript(scriptObject)
                     else
-                        pcall(task.cancel, ClosureThread)
+                        pcall(task_cancel, ClosureThread)
                     end
                 end)
             end
