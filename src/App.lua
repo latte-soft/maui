@@ -174,7 +174,7 @@ return function(plugin, pluginWidget)
                 local Properties = MauiProjectFile["Properties"]
 
                 if FormatVersion ~= nil and FormatVersion ~= 1 then
-                    error("Invalid format version in `.maui` project file; expected 1, got " .. tostring(MauiProjectFile.FormatVersion, 0))
+                    error("Invalid format version in `.maui` project file; expected 1, got " .. tostring(MauiProjectFile.FormatVersion))
                 end
 
                 -- Replace all eligable options for output
