@@ -2,7 +2,7 @@
 
 local CoreGui = game:GetService("CoreGui")
 
-local Fusion = require(script.Fusion)
+local Fusion = require(script.Packages.Fusion)
 
 local New = Fusion.New
 local Children = Fusion.Children

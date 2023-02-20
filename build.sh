@@ -29,50 +29,24 @@ cp LICENSE.txt "$build_path/LICENSE.txt"
 log "Copied LICENSE.txt to $build_path/LICENSE.txt"
 
 # Create base file for 2-way-sync thing
-touch "$build_path/Maui-Packed.lua"
+touch "$build_path/Maui.maui.lua"
 
 # Minifiy the `LoadModule.lua` in the codegen, this is for building prod specifically
 log "Minifying \`LoadModule.lua.txt\` codegen src.. (Renames the file for Darklua, then renames back)"
-cp -f src/Codegen/LoadModuleCode/LoadModule.lua.txt src/Codegen/LoadModuleCode/LoadModule.lua
-darklua process src/Codegen/LoadModuleCode/LoadModule.lua src/Codegen/LoadModuleCode/LoadModule.min.lua
-mv src/Codegen/LoadModuleCode/LoadModule.min.lua src/Codegen/LoadModuleCode/LoadModule.min.lua.txt
-rm -f src/Codegen/LoadModuleCode/LoadModule.lua
-rm -f src/Codegen/LoadModuleCode/LoadModule.min.lua
+cp -f src/LoadModuleCode/LoadModule.lua.txt src/LoadModuleCode/LoadModule.lua
+darklua process src/LoadModuleCode/LoadModule.lua src/LoadModuleCode/LoadModule.min.lua
+mv src/LoadModuleCode/LoadModule.min.lua src/LoadModuleCode/LoadModule.min.lua.txt
+rm -f src/LoadModuleCode/LoadModule.lua
+rm -f src/LoadModuleCode/LoadModule.min.lua
 
 # Run wally pkg install
 log "Installing wally packages.."
 wally install
 
-# Minify & create `/dist` w/ darklua
-
-log "Creating dist.."
-mkdir -p dist
-
-log "Minifying \"/src\".." 2
-rm -rf dist/src
-cp -rf src dist
-darklua process dist/src dist/src
-
-log "Minifying \"/submodules\".." 2
-rm -rf dist/submodules
-cp -rf submodules dist
-darklua process dist/submodules dist/submodules
-
-log "Minifying \"/Packages\".." 2
-rm -rf dist/Packages
-cp -rf Packages dist
-darklua process dist/Packages dist/Packages
-
-log "Minifying \"/tests\".." 2
-rm -rf dist/tests
-cp -rf tests dist
-darklua process dist/tests dist/tests
-
 # Build models w/ Rojo
 log "Building Rojo models.."
-# Building with min.project.json for the GH releases ONLY!
-rojo build min.project.json -o "$build_path/Maui.rbxm"
-rojo build min.project.json -o "$build_path/Maui.rbxmx"
+rojo build -o "$build_path/Maui.rbxm"
+rojo build -o "$build_path/Maui.rbxmx"
 
 # Completed..?
 echo # Newline end

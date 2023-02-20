@@ -1,7 +1,7 @@
 {
     "generator": {
         "name": "dense",
-        "column_span": 10000000000
+        "column_span": 2147483647
     },
     "rules": [
         "convert_local_function_to_assign",

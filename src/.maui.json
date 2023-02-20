@@ -3,7 +3,7 @@
 
     "Output": {
         "Directory": "return script.Parent.Parent.Builds[script.Parent.Version.Value]",
-        "ScriptName": "Maui-Packed",
+        "ScriptName": "Maui.maui",
 
         "MinifyTable": true,
         "UseMinifiedLoader": true

@@ -8,10 +8,10 @@
 ]]
 
 local Root = script.Parent
-local Submodules = Root.Submodules
+local Packages = Root.Packages
 local Components = Root.Components
 
-local Fusion = require(Submodules.Fusion)
+local Fusion = require(Packages.Fusion)
 
 -- Components
 local Button = require(Components.Button)

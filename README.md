@@ -1,10 +1,10 @@
 <div align="center">
     <!-- Logo -->
     <a href="https://github.com/latte-soft/maui#gh-dark-mode-only">
-        <img width="250" src="assets/MauiLogo-DarkMode.svg#gh-dark-mode-only" alt="Maui Logo (Dark Mode)" />
+        <img width="250" src="assets/repo/MauiLogo-DarkMode.svg#gh-dark-mode-only" alt="Maui Logo (Dark Mode)" />
     </a>
     <a href="https://github.com/latte-soft/maui#gh-light-mode-only">
-        <img width="250" src="assets/MauiLogo-LightMode.svg#gh-light-mode-only" alt="Maui Logo (Light Mode)" />
+        <img width="250" src="assets/repo/MauiLogo-LightMode.svg#gh-light-mode-only" alt="Maui Logo (Light Mode)" />
     </a>
     <!-- Title/Desc -->
     <h1>Maui</h1>
@@ -13,19 +13,19 @@
         <!-- Direct links -->
         <!-- Roblox marketplace -->
         <a href="https://www.roblox.com/library/12071720464">
-            <img src="repo/social_icons/roblox_dev.svg" alt="Roblox Marketplace" />
+            <img src="assets/repo/social_icons/roblox_dev.svg" alt="Roblox Marketplace" />
         </a>
         <!-- GitHub releases -->
         <a href="https://github.com/latte-soft/maui/releases">
-            <img src="repo/social_icons/github.svg" alt="GitHub Releases" />
+            <img src="assets/repo/social_icons/github.svg" alt="GitHub Releases" />
         </a>
         <!-- Latte Discord -->
-        <a href="https://latte.to/invite">
-            <img src="repo/social_icons/discord-icon.svg" alt="Latte Softworks Discord" />
+        <a href="https://latte.to/discord">
+            <img src="assets/repo/social_icons/discord-icon.svg" alt="Latte Softworks Discord" />
         </a>
         <!-- Latte Twitter -->
         <a href="https://twitter.com/lattesoftworks">
-            <img src="repo/social_icons/twitter-icon.svg" alt="Latte Softworks Discord" />
+            <img src="assets/repo/social_icons/twitter-icon.svg" alt="Latte Softworks Discord" />
         </a>
     </p>
     <p>
@@ -69,14 +69,6 @@ Maui is built with [LuaEncode](https://github.com/regginator/LuaEncode), another
 
 The plugin, and **all** of its source code, will **always** be 100% free (as-in freedom) & open source, under the MIT License. You can download & build from source on the [GitHub repository](https://github.com/latte-soft/maui) (if you're worried about security or whatnot), or install a pre-built version directly from the [releases page](https://github.com/latte-soft/maui/releases). We *also* provide the plugin on Roblox's Developer Marketplace for ~250 Robux, if you want to support us, or just want automatic updates. With a self/pre-built version of the plugin, you're responsible for keeping it up-to-date in your plugins folder.
 
-___
-
-## Why the Name?
-
-The name of this project was originally going to be "Eclipse", however, it turned out to be a *very* generic and overused name, used by multiple other Lua (Roblox) projects. ("Lua" means "Moon", yeah..) [Roblox's built-in scripting language](https://luau-lang.org) is named "Luau", which is a type of [traditional party/feast](https://en.wikipedia.org/wiki/L%C5%AB%CA%BBau) in Hawaiian culture. ["Maui"](https://en.wikipedia.org/wiki/Maui) is one of the largest islands in Hawaii, with [Luau parties throughout the year](https://mauiluau.com). Hence, a non-generic name!
-
-___
-
 ## Installation
 
 * Installation via Roblox Marketplace
@@ -89,11 +81,9 @@ ___
 
     Goto the [latest release](https://github.com/latte-soft/maui/releases/lastest) on the GitHub repository, and download whichever file suites best. (`*.rbxm` is faster to load, and `*.rbxmx` is more readable.)
 
-    Do note, pre-built versions of Maui are always minified with [Darklua](https://darklua.com), a Lua formatter. It is **not** obfuscation, just minification.
-
     If you don't know where your specific local-plugins folder is, in Studio, goto the "Plugins" tab via the ribbon-bar, and on the left there should be a "Plugins Folder" button, opening that will prompt the local plugins folder, where you will place the plugin in.
 
-    ![Where the plugins folder is](repo/usage/where_plugins_folder_is.png)
+    ![Where the plugins folder is](assets/repo/usage/where_plugins_folder_is.png)
 
 * Building from Source
 
@@ -101,10 +91,10 @@ ___
 
     The following instructions are just for building Maui as quickly as possible, in-case you can't use `build.sh`.
 
-  * Clone the Repository (**Recursively!** We have [submodules](submodules) in use)
+  * Clone the Repository
 
     ```txt
-    git clone https://github.com/latte-soft/maui.git --recursive && cd maui
+    git clone https://github.com/latte-soft/maui.git && cd maui
     ```
 
   * Install Packages w/ Wally
@@ -121,35 +111,29 @@ ___
 
     And you're done! You can place the built model file into your plugins folder
 
-___
-
 ## Usage
 
-In a new/existing Studio place, go to the *"Plugins"* tab from the ribbon-menu, and you'll see a button similar to this:
+In a new/existing Studio place, go to the *"Plugins"* tab from the ribbon menu, and you'll see the plugin:
 
-<img src="repo/usage/maui_in_plugins.png" alt="Maui in plugins tab" />
+<img src="assets/repo/usage/maui_in_plugins.png" alt="Maui in plugins tab" />
 
-Upon toggle, you should automatically see the widget, which from there has more instructions in the console! It is *always* completely synced with **your** Studio's color palette theme, with Fusion components similar to Studio's look & feel.
+<img width="420" src="assets/repo/usage/initial_gui_widget.png" alt="What the widget's GUI looks like" />
 
-<img width="420" src="repo/usage/initial_gui_widget.png" alt="What the widget's GUI looks like" />
+From there, just select an object, and click "Build"! Due to LuaEncode's fast speeds and optimization, Maui usually only takes a few *milliseconds* to create the output.
 
-From there, just select an object, and click "Build"! Due to LuaEncode's EXTREMELY fast speeds and optimization, Maui usually only takes a few *milliseconds* to create the output.
+After the script is built, Maui should open the output script's editor window, and Maui will store information logs in it's internal console.
 
-After the script is built, Maui should open the output script's editor window, and Maui will store information logs in the internal console.
+<img width="600" src="assets/repo/usage/built_script_example.png" alt="Example built-script output" />
 
-<img width="600" src="repo/usage/built_script_example.png" alt="Example built-script output" />
-
-<img width="450" src="repo/usage/widget_gui_console.png" alt="Widget gui console output" />
+<img width="450" src="assets/repo/usage/widget_gui_console.png" alt="Widget gui console output" />
 
 From there, you're done! You can run it in a script utility, another script, place it into obfuscation, etc.. It's 100% portable, and will work in almost *any* Roblox environment!
 
 Remember, because it **literally** packs a Roblox model, you need to have at least 1 `LocalScript` (client context) or `Script` (server context) to actually initialize what you want. You *can* configure this to ignore context like `Script.Disabled` or running a script in the wrong context in the [project format](#the-maui-project-format). By default, if you provide a `MainModule`, Maui will return the value from it with the exact same behavior as requiring a module by ID on Roblox.
 
-##### *This is a simple test-script for using Fusion with an exploit, you can see the source [here](tests/HelloFusion), and example output [here](examples/MauiFusionDemo_2023-01-06_13-24-23.lua)*
+<sup>*This is a simple test-script for using Fusion with an exploit, you can see the source [here](tests/HelloFusion), and example output [here](examples/MauiFusionDemo_2023-01-06_13-24-23.lua)*</sup>
 
-<img width="775" src="repo/usage/example_script_execution.png" alt="Example of script being used" />
-
-___
+<img width="775" src="assets/repo/usage/example_script_execution.png" alt="Example of script being used" />
 
 ## The `maui` Script Global
 
@@ -174,7 +158,7 @@ Here's the *current* API reference:
 * ### Get Real Script Object
 
   ```lua
-  <Instance: LuaSourceContainer> maui.GetScript(<void>)
+  <Instance: LuaSourceContainer> maui.Script
   ```
 
   Returns the REAL script global from the closure that's currently running.
@@ -182,12 +166,10 @@ Here's the *current* API reference:
 * ### Get Shared Environment Table
 
   ```lua
-  <table> maui.GetShared(<void>)
+  <table> maui.Shared
   ```
 
   Returns a "shared" table for ALL closures in a Maui-generated script, so you don't need to the real `_G` or `shared`.
-
-___
 
 ## The "`.maui`" Project Format
 
@@ -251,8 +233,6 @@ You can *also* use [Rojo's JSON module feature](https://rojo.space/docs/v7/sync-
 ```
 
 Still keep in mind, you need to include this file in your `*.project.json` file, if you're using Rojo.
-
-___
 
 ## Contributing
 

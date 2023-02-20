@@ -2,7 +2,7 @@
 [size=xx-large][b]Maui — By Latte Softworks[/b][/size]
 [size=large]Roblox Studio Plugin for Packing Modules as Executable Luau Scripts[/size]
 
-[url=https://www.roblox.com/library/12071720464/Maui-Module-Packing-Serialization][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769983266836490/roblox_dev.svg[/img][/url] [url=https://github.com/latte-soft/maui/releases][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769982948048976/github.svg[/img][/url] [url=https://latte.to/invite][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769982612508753/discord-icon.svg[/img] [/url] [url=https://twitter.com/lattesoftworks][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769983560421416/twitter-icon.svg[/img][/url]
+[url=https://www.roblox.com/library/12071720464/Maui-Module-Packing-Serialization][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769983266836490/roblox_dev.svg[/img][/url] [url=https://github.com/latte-soft/maui/releases][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769982948048976/github.svg[/img][/url] [url=https://latte.to/discord][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769982612508753/discord-icon.svg[/img] [/url] [url=https://twitter.com/lattesoftworks][img]https://cdn.discordapp.com/attachments/1060751075415687178/1060769983560421416/twitter-icon.svg[/img][/url]
 
 [hr][/align]
 
@@ -15,28 +15,13 @@ Maui is built with [url=https://github.com/regginator/LuaEncode]LuaEncode[/url],
 
 [hr]
 
-[size=x-small][i]You can skip reading this if you want to..[/i][/size]
-[size=x-large][b]Preface[/b][/size]
-Ever since the very simple beginnings of script development on this platform, we've all followed a fairly similar, basic way of writing and distributing scripts as a whole. We've had minor changes over the years with things like more complex obfuscation and auth systems, but for the most part, it's still quite the same overall; write everything in one script, and distribute. For tools/libraries made by script devs, this often isn't very organized, or [i]secure[/i] for that matter.
-
-There have been fairly [i]similar[/i] solutions to these issues in the past like [url=https://v3rmillion.net/showthread.php?tid=1162252]"luapack"[/url] and [url=https://github.com/richie0866/rbxm-suite]"rbxm-suite"[/url], however, they usually only solved part of a problem, and either worked against the Roblox environment, or were just too impractical/had too many issues in production.
-
-While the previous way of doing things is not necessarily [i]bad[/i], and can actually be quite useful for small/simple projects, it's not always efficent for proper code organization or development in general. These days, we also have MANY awesome, professional tools created by Roblox's OSS community like [url=https://rojo.space]Rojo[/url] and [url=https://wally.run]Wally[/url] [size=xx-small]sorry, wally[/size], and even libraries such as [url=https://github.com/Roblox/roact]React[/url], [url=https://github.com/Elttob/Fusion]Fusion[/url], and [url=https://github.com/evaera/roblox-lua-promise]Promise[/url].
-
-[b]Do note, Maui is very-much in its' early stages! You may find small bugs, and we do not yet have all of the features implemented that we want to. It's better to just get it out, and update from there![/b]
-
-[size=small][i]Please read [b]this[/b], though[/i][/size]
-[size=x-large][b]Also..[/b][/size]
+[size=large][b]Also..[/b][/size]
 [b]The first thing you may be wondering if you clicked on the [i]"Get it on Roblox"[/i] button before reading this[/b] is probably something along the lines of [b]"Why is this a paid plugin?"[/b]. Well, it [i]is[/i] and it [i]isn't[/i]. Let me explain.
 
 The plugin, and [b]all[/b] of its source code, will [b]always[/b] be 100% free (as-in freedom) & open source, under the MIT License. You can download & build from source on the [url=https://github.com/latte-soft/maui]GitHub repository[/url] (if you're worried about security or whatnot), or install a pre-built version directly from the [url=https://github.com/latte-soft/maui/releases]releases page[/url]. We [i]also[/i] provide the plugin on Roblox's Developer Marketplace for ~250 Robux, if you want to support us, or just want automatic updates. With a self/pre-built version of the plugin, you're responsible for keeping it up-to-date in your plugins folder.
 
 [hr]
 
-[size=x-large][b]Why the Name?[/b][/size]
-The name of this project was originally going to be "Eclipse", however, it turned out to be a [i]very[/i] generic and overused name, used by multiple other Lua (Roblox) projects. ("Lua" means "Moon", yeah..) [url=https://luau-lang.org]Roblox's built-in scripting language[/url] is named "Luau", which is a type of [url=https://en.wikipedia.org/wiki/L%C5%AB%CA%BBau]traditional party/feast[/url] in Hawaiian culture. [url=https://en.wikipedia.org/wiki/Mau]"Maui"[/url] is one of the largest islands in Hawaii, with [url=https://mauiluau.com]Luau parties throughout the year[/url]. Hence, a non-generic name!
-
-[hr]
 [size=x-large][b]Installation & Getting Started[/b][/size]
 
 [spoiler="Installation via Roblox Marketplace"]
@@ -48,9 +33,8 @@ From there, just "Install" the plugin in Studio from Roblox!
 [spoiler="Installation via GitHub Releases"]
 Goto the [url=https://github.com/latte-soft/maui/releases/lastest]latest release[/url] on the GitHub repository, and download whichever file suites best. ([font=Courier New]*.rbxm[/font] is faster to load, and [font=Courier New]*.rbxmx[/font] is more readable.)
 
-Do note, pre-built versions of Maui are always minified with [url=https://darklua.com]Darklua[/url], a Lua formatter. It is [b]not[/b] obfuscation, just minification.
-
-If you don't know where your specific local-plugins folder is, in Studio, goto the "Plugins" tab via the ribbon-bar, and on the left there should be a "Plugins Folder" button, opening that will prompt the local plugins folder, where you will place the plugin in.
+If you don't know where your specific local-plugins folder is, in Studio, goto the "Plugins" tab via the ribbon-bar, and on the left there s
+hould be a "Plugins Folder" button, opening that will prompt the local plugins folder, where you will place the plugin in.
 
 [img]https://media.discordapp.net/attachments/1060751075415687178/1060993996060631050/image.png[/img]
 [/spoiler]
@@ -62,17 +46,15 @@ For building directly from source, you can view the latest build instructions in
 
 
 [size=large][b]Usage[/b][/size]
-In a new/existing Studio place, go to the [i]"Plugins"[/i] tab from the ribbon-menu, and you'll see a button similar to this:
+In a new/existing Studio place, go to the [i]"Plugins"[/i] tab from the ribbon menu, and you'll see the plugin:
 
 [img]https://media.discordapp.net/attachments/1060751075415687178/1060815232076873728/image.png[/img]
 
-Upon toggle, you should automatically see the widget, which from there has more instructions in the console! It is [i]always[/i] completely synced with [b]your[/b] Studio's color palette theme, with Fusion components similar to Studio's look & feel.
-
 [img=420x259]https://media.discordapp.net/attachments/1060751075415687178/1060817600243830845/image.png[/img]
 
-From there, just select an object, and click "Build"! Due to LuaEncode's EXTREMELY fast speeds and optimization, Maui usually only takes a few [i]milliseconds[/i] to create the output.
+From there, just select an object, and click "Build"! Due to LuaEncode's fast speeds and optimization, Maui usually only takes a few [i]milliseconds[/i] to create the output.
 
-After the script is built, Maui should open the output script's editor window, and Maui will store information logs in the internal console.
+After the script is built, Maui should open the output script's editor window, and Maui will store information logs in it's internal console.
 
 [img=600x256]https://media.discordapp.net/attachments/1060751075415687178/1060818298213777418/image.png?width=1069&height=456[/img]
 
@@ -104,13 +86,13 @@ Here's the [i]current[/i] API reference:
 
 [*] [size=large][b]Get Real Script Object[/b][/size]
 
-  [font=Courier New]<Instance: LuaSourceContainer> maui.GetScript(<void>)[/font]
+  [font=Courier New]<Instance: LuaSourceContainer> maui.Script
 
   Returns the REAL script global from the closure that's currently running.
 
 [*] [size=large][b]Get Shared Environment Table[/b][/size]
 
-  [font=Courier New]<table> maui.GetShared(<void>)[/font]
+  [font=Courier New]<table> maui.Shared
 
   Returns a "shared" table for ALL closures in a Maui-generated script, so you don't need to the real `_G` or `shared`.
 [/list]

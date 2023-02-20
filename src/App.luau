@@ -13,19 +13,19 @@ local Selection = game:GetService("Selection")
 local ScriptEditorService = game:GetService("ScriptEditorService")
 
 local Root = script.Parent
-local Submodules = Root.Submodules
+local Packages = Root.Packages
 local Components = Root.Components
 
 local Codegen = require(Root.Codegen)
-local Fusion = require(Submodules.Fusion)
+local Fusion = require(Packages.Fusion)
 
 -- Constants
-local DEFAULT_CONSOLE_TEXT = "Maui | Copyright (c) 2022-2023 Latte Softworks <latte.to>\nGitHub: latte-soft/maui\n\nTo build a new script from a model, make a selection in your explorer, then just use the options below.\nRight click this console for further options.\n\n"
-local INITIAL_OUTPUT_TEXT = "-- Maui: Waiting to add real script output to the editor..\n"
+local DefaultConsoleText = "Maui | Copyright (c) 2022-2023 Latte Softworks <latte.to>\nGitHub: latte-soft/maui\n\nTo build a new script from a model, make a selection in your explorer, then just use the options below.\nRight click this console for further options.\n\n"
+local InitialOutputText = "-- Maui: Waiting to add real script output to the editor..\n"
 
 -- Default options for the `.maui` format, assign a "Nil" marker for use later aswell
 local Nil = newproxy()
-local DEFAULT_OPTIONS = {
+local DefaultOptions = {
     FormatVersion = 1, -- Isn't necessary in the project file, but just for future proofing the format incase we ever change anything
 
     -- All output options
@@ -128,7 +128,7 @@ return function(plugin, pluginWidget)
     local SelectedScript = Value(nil)
 
     -- GUI console state values
-    local ConsoleOutput = Value(DEFAULT_CONSOLE_TEXT)
+    local ConsoleOutput = Value(DefaultConsoleText)
     local AutoScrollEnabled = Value(PluginSettings.Get("ConsoleAutoscroll")) -- Can be changed thru context menu
 
     local function Log(text, logStack)
@@ -146,7 +146,7 @@ return function(plugin, pluginWidget)
         end
 
         -- Get default options, and if there's a `.maui` project file, use those
-        local Options = DeepClone(DEFAULT_OPTIONS)
+        local Options = DeepClone(DefaultOptions)
         local MauiProjectFileModule = FirstObjectSelected:FindFirstChild(".maui")
 
         if MauiProjectFileModule then
@@ -393,7 +393,7 @@ return function(plugin, pluginWidget)
                 -- __newindex set limit. We have to escape all "invalid" unicode from strings in the script,
                 -- or `ScriptDocument:EditTextAsync` will error with a cryptic message to the user
                 pcall(function()
-                    ScriptObject.Source = INITIAL_OUTPUT_TEXT
+                    ScriptObject.Source = InitialOutputText
                 end)
 
                 ScriptEditorService:OpenScriptDocumentAsync(ScriptObject)
@@ -479,7 +479,7 @@ return function(plugin, pluginWidget)
 
         local ReloadConsoleAction = ConsoleContextMenu:AddNewAction("MauiConsoleContextMenuReloadConsole", "Reload Console")
         ReloadConsoleAction.Triggered:Connect(function()
-            ConsoleOutput:set(DEFAULT_CONSOLE_TEXT)
+            ConsoleOutput:set(DefaultConsoleText)
         end)
 
         local ToggleAutoscrollAction = ConsoleContextMenu:AddNewAction("MauiConsoleContextMenuToggleAutoscroll", "Toggle Autoscroll")

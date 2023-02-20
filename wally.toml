@@ -12,4 +12,4 @@ registry = "https://github.com/UpliftGames/wally-index"
 
 [dependencies]
 LuaEncode = "regginator/luaencode@1.1.6"
-# Will use Fusion 0.2 with Wally once it's actually prod published!
+Fusion = "elttob/fusion@0.2.0"

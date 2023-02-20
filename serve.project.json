@@ -9,20 +9,12 @@
             "Maui": {
                 "$className": "Folder",
 
-                "MauiDev": {
-                    "$path": "default.project.json"
-                },
-
                 "Maui": {
-                    "$path": "min.project.json"
+                    "$path": "default.project.json"
                 },
 
                 "Tests": {
                     "$path": "tests"
-                },
-
-                "TestsMinified": {
-                    "$path": "dist/tests"
                 },
 
                 "Builds": {

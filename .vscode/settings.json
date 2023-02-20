@@ -6,5 +6,6 @@
         "MD026": false,
         "MD034": false,
         "MD001": false
-    }
+    },
+    "luau-lsp.require.mode": "relativeToWorkspaceRoot"
 }

@@ -3,9 +3,14 @@
 registry = "test"
 
 [[package]]
+name = "elttob/fusion"
+version = "0.2.0"
+dependencies = []
+
+[[package]]
 name = "latte-soft/maui"
 version = "0.4.1"
-dependencies = [["LuaEncode", "regginator/luaencode@1.1.6"]]
+dependencies = [["Fusion", "elttob/fusion@0.2.0"], ["LuaEncode", "regginator/luaencode@1.1.6"]]
 
 [[package]]
 name = "regginator/luaencode"

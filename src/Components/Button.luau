@@ -8,9 +8,9 @@
 ]]
 
 local Root = script.Parent.Parent
-local Submodules = Root.Submodules
+local Packages = Root.Packages
 
-local Fusion = require(Submodules.Fusion)
+local Fusion = require(Packages.Fusion)
 
 -- Fusion definitions
 local New = Fusion.New

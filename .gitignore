@@ -5,9 +5,6 @@
 /*.rbxl
 /*.rbxlx
 
-# DarkLua minified src output
-/dist
-
 # Wally-installed packages (Use `wally.lock` for specific pkg version reinstallation)
 /Packages
 /ServerPackages

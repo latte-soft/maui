@@ -13,7 +13,6 @@ local Tarmac = script.Tarmac -- Tarmac generated assets (See `/tarmac.toml`)
 local Version = script.Version.Value -- /version.txt
 
 local App = require(script.App) -- Front-end interface app
---local PluginSettings = require(script.PluginSettings) -- Global plugin config module
 local Assets = require(Tarmac.Assets) -- Tarmac generated assets (See `/tarmac.toml`)
 
 local NameWithVersion = "Maui " .. Version

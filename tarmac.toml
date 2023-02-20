@@ -3,7 +3,8 @@ upload-to-group-id = 10685936 # Latte Softworks; https://www.roblox.com/groups/1
 
 # Our assets
 [[inputs]]
-glob = "assets/**/*.png"
-codegen = true
+glob = "assets/roblox/**/*.png"
 codegen-path = "src/Tarmac/Assets.lua"
-codegen-base-path = "assets" # Set the assets dir as root
+codegen-base-path = "assets/roblox"
+codegen = true
+packable = false

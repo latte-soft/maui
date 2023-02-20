@@ -7,16 +7,8 @@
             "$path": "version.txt"
         },
 
-        ".maui": {
-            "$path": ".maui.json"
-        },
-
         "Packages": {
             "$path": "Packages"
-        },
-
-        "Submodules": {
-            "$path": "submodules"
         }
     }
 }
