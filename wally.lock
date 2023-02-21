@@ -9,7 +9,7 @@ dependencies = []
 
 [[package]]
 name = "latte-soft/maui"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [["Fusion", "elttob/fusion@0.2.0"], ["LuaEncode", "regginator/luaencode@1.1.6"]]
 
 [[package]]
