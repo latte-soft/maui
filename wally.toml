@@ -1,7 +1,7 @@
 [package]
 name = "latte-soft/maui"
 description = "Roblox Studio Plugin for Packing Modules as Executable Luau Scripts"
-version = "0.4.2"
+version = "0.5.0"
 license = "MIT"
 authors = [
     "Latte Softworks <latte.to>",
@@ -11,5 +11,5 @@ realm = "shared"
 registry = "https://github.com/UpliftGames/wally-index"
 
 [dependencies]
-LuaEncode = "regginator/luaencode@1.1.6"
+LuaEncode = "regginator/luaencode@1.2.0"
 Fusion = "elttob/fusion@0.2.0"
