@@ -1,3 +1,8 @@
+> [!WARNING]
+> Maui has been archived & deprecated in favor of [Wax](https://github.com/latte-soft/wax), a far more polished project that isn't *dependant* on the Roblox engine, and can also run on both vanilla Lua, **and** Luau. In addition, thank you to all who used Maui in supporting both us & this project!
+ 
+___
+
 <div align="center">
     <!-- Logo -->
     <a href="https://github.com/latte-soft/maui#gh-dark-mode-only">
@@ -130,10 +135,6 @@ After the script is built, Maui should open the output script's editor window, a
 From there, you're done! You can run it in a script utility, another script, place it into obfuscation, etc.. It's 100% portable, and will work in almost *any* Roblox environment!
 
 Remember, because it **literally** packs a Roblox model, you need to have at least 1 `LocalScript` (client context) or `Script` (server context) to actually initialize what you want. You *can* configure this to ignore context like `Script.Disabled` or running a script in the wrong context in the [project format](#the-maui-project-format). By default, if you provide a `MainModule`, Maui will return the value from it with the exact same behavior as requiring a module by ID on Roblox.
-
-<sup>*This is a simple test-script for using Fusion with an exploit, you can see the source [here](tests/HelloFusion), and example output [here](examples/MauiFusionDemo_2023-01-06_13-24-23.lua)*</sup>
-
-<img width="775" src="assets/repo/usage/example_script_execution.png" alt="Example of script being used" />
 
 ## The `maui` Script Global
 
